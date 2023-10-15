@@ -1,1 +1,1 @@
-console.log("Hello World!")
+const message = 'AHUHAUUHA'
