@@ -4,11 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "ts-node-dev src/server.ts",
+    "start:dev": "ts-node-dev src/server.ts",
     "husky:prepare": "husky install",
     "test": "jest --passWithNoTests",
     "test:watch": "yarn test --watch",
-    "test:staged": "yarn test --findRelatedTests"
+    "test:staged": "yarn test --findRelatedTests",
+    "test:push": "yarn test --coverage"
   },
   "keywords": [],
   "author": "",
