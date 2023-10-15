@@ -1,10 +1,5 @@
-class Person {
-  sayHello() {
-    return 'Daniel'
-  }
-}
+import { Person } from '@/index'
 
-export default Person
 it('should sum', () => {
   const person = new Person()
 
