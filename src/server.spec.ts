@@ -1,3 +1,12 @@
+class Person {
+  sayHello() {
+    return 'Daniel'
+  }
+}
+
+export default Person
 it('should sum', () => {
-  expect(2 + 2).toBe(4)
+  const person = new Person()
+
+  expect(person.sayHello()).toBe('Daniel')
 })
