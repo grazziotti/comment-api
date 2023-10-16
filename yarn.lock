@@ -629,6 +629,11 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
+"@prisma/engines@5.4.2":
+  version "5.4.2"
+  resolved "https://registry.yarnpkg.com/@prisma/engines/-/engines-5.4.2.tgz#ba2b7faeb227c76e423e88f962afe6a031319f3f"
+  integrity sha512-fqeucJ3LH0e1eyFdT0zRx+oETLancu5+n4lhiYECyEz6H2RDskPJHJYHkVc0LhkU4Uv7fuEnppKU3nVKNzMh8g==
+
 "@sinclair/typebox@^0.27.8":
   version "0.27.8"
   resolved "https://registry.yarnpkg.com/@sinclair/typebox/-/typebox-0.27.8.tgz#6667fac16c436b5434a387a34dedb013198f6e6e"
@@ -3079,6 +3084,13 @@ pretty-format@^29.0.0, pretty-format@^29.7.0:
     "@jest/schemas" "^29.6.3"
     ansi-styles "^5.0.0"
     react-is "^18.0.0"
+
+prisma@^5.4.2:
+  version "5.4.2"
+  resolved "https://registry.yarnpkg.com/prisma/-/prisma-5.4.2.tgz#7eac9276439ec7073ec697c6c0dfa259d96e955e"
+  integrity sha512-GDMZwZy7mysB2oXU+angQqJ90iaPFdD0rHaZNkn+dio5NRkGLmMqmXs31//tg/qXT3iB0cTQwnGGQNuirhSTZg==
+  dependencies:
+    "@prisma/engines" "5.4.2"
 
 prompts@^2.0.1:
   version "2.4.2"
