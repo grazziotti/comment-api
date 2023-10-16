@@ -9,3 +9,42 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id String @id @default(uuid())
+  username String   @unique
+  email    String   @unique
+  password String
+  comments Comment[]
+  likes Like[]
+  createdAt DateTime @default(now())
+  
+  @@map("users")
+}
+
+model Comment {
+    id String @id @default(uuid())
+    content String
+    user User @relation(fields: [userId], references: [id])
+    userId String
+    parent Comment? @relation(fields: [parentId], references: [id], name: "ChildComments")
+    parentId String?
+    replyTo Comment? @relation(fields: [replyToId], references: [id], name: "ReplyToComments")
+    replyToId String?
+    likes Like[]
+    createdAt DateTime @default(now())
+    @@map("comments")
+
+    replies     Comment[] @relation("ChildComments")
+    repliedToBy Comment[] @relation("ReplyToComments")
+}
+
+model Like {
+    id String @id @default(uuid())
+    user User @relation(fields: [userId], references: [id])
+    userId String
+    comment Comment @relation(fields: [commentId], references: [id])
+    commentId String
+    createdAt DateTime @default(now())
+    @@map("likes")
+}
