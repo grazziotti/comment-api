@@ -829,6 +829,13 @@
   resolved "https://registry.yarnpkg.com/@types/json-schema/-/json-schema-7.0.13.tgz#02c24f4363176d2d18fc8b70b9f3c54aba178a85"
   integrity sha512-RbSSoHliUbnXj3ny0CNFOoxrIDV6SUGyStHsvDqosw6CkdPV8TtWGlfecuK4ToyMEAql6pzNxgCFKanovUzlgQ==
 
+"@types/jsonwebtoken@*":
+  version "9.0.4"
+  resolved "https://registry.yarnpkg.com/@types/jsonwebtoken/-/jsonwebtoken-9.0.4.tgz#8b74bbe87bde81a3469d4b32a80609bec62c23ec"
+  integrity sha512-8UYapdmR0QlxgvJmyE8lP7guxD0UGVMfknsdtCFZh4ovShdBl3iOI4zdvqBHrB/IS+xUj3PSx73Qkey1fhWz+g==
+  dependencies:
+    "@types/node" "*"
+
 "@types/mime@*":
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/@types/mime/-/mime-3.0.2.tgz#c1ae807f13d308ee7511a5b81c74f327028e66e8"
@@ -846,7 +853,24 @@
   dependencies:
     undici-types "~5.25.1"
 
-"@types/passport@^1.0.14":
+"@types/passport-jwt@^3.0.11":
+  version "3.0.11"
+  resolved "https://registry.yarnpkg.com/@types/passport-jwt/-/passport-jwt-3.0.11.tgz#96d69fad0a7af28ba44e2ed202c33745a53f1ca2"
+  integrity sha512-HwQNi4cajueebj41EjH5rtnLAdxQfusICFU18JEnvV3uYCJzKoT1D3MCwQ+nn8HeGjy6QuTxnm/I2WxuraqeDw==
+  dependencies:
+    "@types/express" "*"
+    "@types/jsonwebtoken" "*"
+    "@types/passport-strategy" "*"
+
+"@types/passport-strategy@*":
+  version "0.2.37"
+  resolved "https://registry.yarnpkg.com/@types/passport-strategy/-/passport-strategy-0.2.37.tgz#c1f2bc6c24c79a22ddd4693904b544837908a9eb"
+  integrity sha512-ltgwLnwHVfpjK7/66lpv43hiz90nIVb36JmeB0iF3FAZoHX6+LbkY5Ey97Bm8Jr0uGhQyDFEsSOOfejp5PJehg==
+  dependencies:
+    "@types/express" "*"
+    "@types/passport" "*"
+
+"@types/passport@*", "@types/passport@^1.0.14":
   version "1.0.14"
   resolved "https://registry.yarnpkg.com/@types/passport/-/passport-1.0.14.tgz#7ca891b04ae08d7ca4dbf30fece7c86174a16db9"
   integrity sha512-D6p2ygR2S7Cq5PO7iUaEIQu/5WrM0tONu6Lxgk0C9r3lafQIlVpWCo3V/KI9To3OqHBxcfQaOeK+8AvwW5RYmw==
@@ -2794,7 +2818,7 @@ json5@^2.2.2, json5@^2.2.3:
   resolved "https://registry.yarnpkg.com/json5/-/json5-2.2.3.tgz#78cd6f1a19bdc12b73db5ad0c61efd66c1e29283"
   integrity sha512-XmOWe7eyHYH14cLdVPoyg+GOH3rYX++KpzrylJwSW98t3Nk+U8XOl8FWKOgwtzdb8lXGf6zYwDUzeHMWfxasyg==
 
-jsonwebtoken@^9.0.2:
+jsonwebtoken@^9.0.0, jsonwebtoken@^9.0.2:
   version "9.0.2"
   resolved "https://registry.yarnpkg.com/jsonwebtoken/-/jsonwebtoken-9.0.2.tgz#65ff91f4abef1784697d40952bb1998c504caaf3"
   integrity sha512-PRp66vJ865SSqOlgqS8hujT5U4AOgMfhrwYIuIhfKaoSCZcirrmASQr8CX7cUg+RMih+hgznrjp99o+W4pJLHQ==
@@ -3300,7 +3324,15 @@ parseurl@~1.3.3:
   resolved "https://registry.yarnpkg.com/parseurl/-/parseurl-1.3.3.tgz#9da19e7bee8d12dff0513ed5b76957793bc2e8d4"
   integrity sha512-CiyeOxFT/JZyN5m0z9PfXw4SCBJ6Sygz1Dpl0wqjlhDEGGBP1GnsUVEL0p63hoG1fcj3fHynXi9NYO4nWOL+qQ==
 
-passport-strategy@1.x.x:
+passport-jwt@^4.0.1:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/passport-jwt/-/passport-jwt-4.0.1.tgz#c443795eff322c38d173faa0a3c481479646ec3d"
+  integrity sha512-UCKMDYhNuGOBE9/9Ycuoyh7vP6jpeTp/+sfMJl7nLff/t6dps+iaeE0hhNkKN8/HZHcJ7lCdOyDxHdDoxoSvdQ==
+  dependencies:
+    jsonwebtoken "^9.0.0"
+    passport-strategy "^1.0.0"
+
+passport-strategy@1.x.x, passport-strategy@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/passport-strategy/-/passport-strategy-1.0.0.tgz#b5539aa8fc225a3d1ad179476ddf236b440f52e4"
   integrity sha512-CB97UUvDKJde2V0KDWWB3lyf6PC3FaZP7YxZ2G8OAtn9p4HI9j9JLP9qjOGZFvyl8uwNT8qM+hGnz/n16NI7oA==
