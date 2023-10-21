@@ -13,4 +13,5 @@ export type UserSave = {
 export interface IUserRepository {
   save(data: UserCreate): Promise<UserSave>
   findByUsername(username: string): Promise<UserSave | null>
+  findById(id: string): Promise<UserSave | null>
 }

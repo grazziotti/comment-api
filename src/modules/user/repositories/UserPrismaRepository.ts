@@ -19,6 +19,14 @@ class UserPrismaRepository implements IUserRepository {
     })
     return user
   }
+  async findById(id: string): Promise<UserSave | null> {
+    const user = await prismaClient.user.findUnique({
+      where: {
+        id,
+      },
+    })
+    return user
+  }
 }
 
 export { UserPrismaRepository }
