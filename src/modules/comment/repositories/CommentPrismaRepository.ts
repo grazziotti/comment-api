@@ -27,6 +27,20 @@ class CommentPrismaRepository implements ICommentRepository {
     })
     return comment
   }
+  async getAll(): Promise<CommentSave[]> {
+    const commentsWithRepliesAndLikes = await prismaClient.comment.findMany({
+      include: {
+        replies: {
+          include: {
+            likes: true,
+          },
+        },
+        likes: true,
+      },
+    })
+
+    return commentsWithRepliesAndLikes
+  }
 }
 
 export { CommentPrismaRepository }

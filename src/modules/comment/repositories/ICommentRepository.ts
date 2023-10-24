@@ -17,4 +17,5 @@ export type CommentSave = {
 export interface ICommentRepository {
   save(data: CommentCreate): Promise<CommentSave>
   findById(id: string): Promise<CommentSave | null>
+  getAll(): Promise<CommentSave[]>
 }

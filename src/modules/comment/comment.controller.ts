@@ -1,9 +1,20 @@
 import { Request, Response } from 'express'
 import { CommentPrismaRepository } from './repositories/CommentPrismaRepository'
-import { CommentCreateService } from './comment.create.service'
 import { UserSave } from '../user/repositories/IUserRepository'
+import { CommentGetAllService } from './comment.getAll.service'
+import { CommentCreateService } from './comment.create.service'
 
 class CommentController {
+  async getAll(request: Request, response: Response): Promise<Response> {
+    const prismaCommentRepository = new CommentPrismaRepository()
+    const commentGetAllService = new CommentGetAllService(
+      prismaCommentRepository,
+    )
+
+    const commentsWithRepliesAndLikes = await commentGetAllService.execute()
+
+    return response.json(commentsWithRepliesAndLikes)
+  }
   async create(request: Request, response: Response): Promise<Response> {
     try {
       const user = request.user as UserSave
