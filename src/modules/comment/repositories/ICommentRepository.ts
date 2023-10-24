@@ -5,6 +5,11 @@ export type CommentCreate = {
   replyToId: string | null
 }
 
+export type CommentEdit = {
+  commentId: string
+  newContent: string
+}
+
 export type CommentSave = {
   id: string
   content: string
@@ -18,4 +23,5 @@ export interface ICommentRepository {
   save(data: CommentCreate): Promise<CommentSave>
   findById(id: string): Promise<CommentSave | null>
   getAll(): Promise<CommentSave[]>
+  edit(data: CommentEdit): Promise<CommentSave>
 }

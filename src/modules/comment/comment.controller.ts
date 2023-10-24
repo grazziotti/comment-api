@@ -3,6 +3,7 @@ import { CommentPrismaRepository } from './repositories/CommentPrismaRepository'
 import { UserSave } from '../user/repositories/IUserRepository'
 import { CommentGetAllService } from './comment.getAll.service'
 import { CommentCreateService } from './comment.create.service'
+import { CommentEditService } from './comment.edit.service'
 
 class CommentController {
   async getAll(request: Request, response: Response): Promise<Response> {
@@ -34,6 +35,29 @@ class CommentController {
       })
 
       return response.status(201).json(createdComment)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      return response.status(400).json({ error: error.message })
+    }
+  }
+
+  async edit(request: Request, response: Response): Promise<Response> {
+    try {
+      const user = request.user as UserSave
+
+      const { commentId } = request.params
+      const { content } = request.body
+
+      const prismaCommentRepository = new CommentPrismaRepository()
+      const commentEditService = new CommentEditService(prismaCommentRepository)
+
+      const updatedComment = await commentEditService.execute({
+        newContent: content,
+        userId: user.id,
+        commentId,
+      })
+
+      return response.status(200).json(updatedComment)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       return response.status(400).json({ error: error.message })

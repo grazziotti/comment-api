@@ -1,6 +1,7 @@
 import { prismaClient } from '../../../database/client'
 import {
   CommentCreate,
+  CommentEdit,
   CommentSave,
   ICommentRepository,
 } from './ICommentRepository'
@@ -40,6 +41,20 @@ class CommentPrismaRepository implements ICommentRepository {
     })
 
     return commentsWithRepliesAndLikes
+  }
+  async edit(data: CommentEdit): Promise<CommentSave> {
+    const { commentId, newContent } = data
+
+    const updatedComment = await prismaClient.comment.update({
+      where: {
+        id: commentId,
+      },
+      data: {
+        content: newContent,
+      },
+    })
+
+    return updatedComment
   }
 }
 
