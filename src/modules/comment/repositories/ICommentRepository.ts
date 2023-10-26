@@ -24,4 +24,5 @@ export interface ICommentRepository {
   findById(id: string): Promise<CommentSave | null>
   getAll(): Promise<CommentSave[]>
   edit(data: CommentEdit): Promise<CommentSave>
+  delete(commentId: string): Promise<void>
 }

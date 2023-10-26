@@ -4,6 +4,7 @@ import { UserSave } from '../user/repositories/IUserRepository'
 import { CommentGetAllService } from './comment.getAll.service'
 import { CommentCreateService } from './comment.create.service'
 import { CommentEditService } from './comment.edit.service'
+import { CommentDeleteService } from './comment.delete.service'
 
 class CommentController {
   async getAll(request: Request, response: Response): Promise<Response> {
@@ -40,7 +41,6 @@ class CommentController {
       return response.status(400).json({ error: error.message })
     }
   }
-
   async edit(request: Request, response: Response): Promise<Response> {
     try {
       const user = request.user as UserSave
@@ -58,6 +58,25 @@ class CommentController {
       })
 
       return response.status(200).json(updatedComment)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      return response.status(400).json({ error: error.message })
+    }
+  }
+  async delete(request: Request, response: Response): Promise<Response> {
+    try {
+      const user = request.user as UserSave
+
+      const { commentId } = request.params
+
+      const prismaCommentRepository = new CommentPrismaRepository()
+      const commentDeleteService = new CommentDeleteService(
+        prismaCommentRepository,
+      )
+
+      await commentDeleteService.execute({ commentId, userId: user.id })
+
+      return response.status(204).send()
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       return response.status(400).json({ error: error.message })
