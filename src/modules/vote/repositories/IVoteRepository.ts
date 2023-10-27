@@ -1,5 +1,6 @@
 export type VoteCreate = {
   commentId: string
+  voteType: string
   userId: string
 }
 
@@ -7,6 +8,7 @@ export type VoteSave = {
   id: string
   commentId: string
   userId: string
+  voteType: string
   createdAt: Date
 }
 

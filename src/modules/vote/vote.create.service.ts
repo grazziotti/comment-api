@@ -10,7 +10,7 @@ class VoteCreateService {
   ) {}
 
   async execute(commentData: VoteCreate) {
-    const { commentId, userId } = commentData
+    const { commentId, voteType, userId } = commentData
 
     const user = await this.userRepository.findById(userId)
 
@@ -34,9 +34,14 @@ class VoteCreateService {
         throw new Error('User has already voted this comment.')
       }
 
+      if (voteType !== 'upVote' && voteType !== 'downVote') {
+        throw new Error('Invalid voteType.')
+      }
+
       const createdVote = await this.voteRepository.save({
         commentId: comment.id,
         userId,
+        voteType,
       })
 
       return createdVote

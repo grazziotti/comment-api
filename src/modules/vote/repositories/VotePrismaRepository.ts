@@ -3,12 +3,13 @@ import { IVoteRepository, VoteCreate } from './IVoteRepository'
 
 class VotePrismaRepository implements IVoteRepository {
   async save(data: VoteCreate) {
-    const { commentId, userId } = data
+    const { commentId, voteType, userId } = data
 
     const createdVote = await prismaClient.vote.create({
       data: {
         userId,
         commentId,
+        voteType,
       },
     })
 

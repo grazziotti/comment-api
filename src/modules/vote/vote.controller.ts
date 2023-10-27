@@ -11,7 +11,7 @@ class VoteController {
     try {
       const user = request.user as UserSave
 
-      const { commentId } = request.body
+      const { commentId, voteType } = request.body
 
       const prismaVoteRepository = new VotePrismaRepository()
       const prismaUserRepository = new UserPrismaRepository()
@@ -25,6 +25,7 @@ class VoteController {
       const createdVote = await voteCreateService.execute({
         commentId,
         userId: user.id,
+        voteType,
       })
 
       return response.json(createdVote)
