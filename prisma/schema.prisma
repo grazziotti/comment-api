@@ -44,6 +44,7 @@ model Vote {
     userId String
     comment Comment @relation(fields: [commentId], references: [id])
     commentId String
+    voteType String
     createdAt DateTime @default(now())
     @@map("votes")
 }
