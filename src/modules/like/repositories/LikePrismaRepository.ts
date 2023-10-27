@@ -14,6 +14,7 @@ class LikePrismaRepository implements ILikeRepository {
 
     return createdLike
   }
+
   async checkUserVoteForComment(commentId: string, userId: string) {
     const like = await prismaClient.like.findFirst({
       where: {
@@ -23,6 +24,25 @@ class LikePrismaRepository implements ILikeRepository {
     })
 
     return like
+  }
+
+  async findById(id: string) {
+    const like = await prismaClient.like.findUnique({
+      where: {
+        id,
+      },
+    })
+
+    return like
+  }
+
+  async delete(id: string): Promise<void> {
+    await prismaClient.like.delete({
+      where: {
+        id,
+      },
+    })
+    return
   }
 }
 

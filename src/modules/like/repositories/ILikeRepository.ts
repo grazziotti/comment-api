@@ -16,4 +16,6 @@ export interface ILikeRepository {
     commentId: string,
     userId: string,
   ): Promise<LikeSave | null>
+  findById(id: string): Promise<LikeSave | null>
+  delete(id: string): Promise<void>
 }
