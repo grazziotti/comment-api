@@ -1,33 +1,33 @@
 import { Request, Response } from 'express'
-import { LikePrismaRepository } from './repositories/LikePrismaRepository'
-import { LikeCreateService } from './like.create.service'
+import { VotePrismaRepository } from './repositories/VotePrismaRepository'
+import { VoteCreateService } from './vote.create.service'
 import { UserSave } from '../user/repositories/IUserRepository'
-import { CommentPrismaRepository } from '../../modules/comment/repositories/CommentPrismaRepository'
+import { CommentPrismaRepository } from '../comment/repositories/CommentPrismaRepository'
 import { UserPrismaRepository } from '@/modules/user/repositories/UserPrismaRepository'
-import { LikeDeleteService } from './like.delete.service'
+import { VoteDeleteService } from './vote.delete.service'
 
-class LikeController {
+class VoteController {
   async create(request: Request, response: Response): Promise<Response> {
     try {
       const user = request.user as UserSave
 
-      const { commentId } = request.params
+      const { commentId } = request.body
 
-      const prismaLikeRepository = new LikePrismaRepository()
+      const prismaVoteRepository = new VotePrismaRepository()
       const prismaUserRepository = new UserPrismaRepository()
       const prismaCommentRepository = new CommentPrismaRepository()
-      const likeCreateService = new LikeCreateService(
-        prismaLikeRepository,
+      const voteCreateService = new VoteCreateService(
+        prismaVoteRepository,
         prismaUserRepository,
         prismaCommentRepository,
       )
 
-      const createdLike = await likeCreateService.execute({
+      const createdVote = await voteCreateService.execute({
         commentId,
         userId: user.id,
       })
 
-      return response.json(createdLike)
+      return response.json(createdVote)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       return response.status(400).json({ error: error.message })
@@ -37,12 +37,12 @@ class LikeController {
     try {
       const user = request.user as UserSave
 
-      const { likeId } = request.params
+      const { id } = request.params
 
-      const prismaLikeRepository = new LikePrismaRepository()
-      const likeDeleteService = new LikeDeleteService(prismaLikeRepository)
+      const prismaVoteRepository = new VotePrismaRepository()
+      const voteDeleteService = new VoteDeleteService(prismaVoteRepository)
 
-      await likeDeleteService.execute({ likeId, userId: user.id })
+      await voteDeleteService.execute({ voteId: id, userId: user.id })
 
       return response.status(204).send()
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -52,4 +52,4 @@ class LikeController {
   }
 }
 
-export { LikeController }
+export { VoteController }

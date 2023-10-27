@@ -8,7 +8,6 @@ import { FindUserByIdService } from '@/modules/user/user.findById.service'
 import { UserSave } from '@/modules/user/repositories/IUserRepository'
 
 dotenv.config()
-//const notAuthorizedError = new Error("Não autorizado");
 const notAuthorizedJson = { status: 403, message: 'Not authorized.' }
 
 const jwtOptions = {

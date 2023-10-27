@@ -1,43 +1,43 @@
 import { prismaClient } from '../../../database/client'
-import { ILikeRepository, LikeCreate } from './ILikeRepository'
+import { IVoteRepository, VoteCreate } from './IVoteRepository'
 
-class LikePrismaRepository implements ILikeRepository {
-  async save(data: LikeCreate) {
+class VotePrismaRepository implements IVoteRepository {
+  async save(data: VoteCreate) {
     const { commentId, userId } = data
 
-    const createdLike = await prismaClient.like.create({
+    const createdVote = await prismaClient.vote.create({
       data: {
         userId,
         commentId,
       },
     })
 
-    return createdLike
+    return createdVote
   }
 
   async checkUserVoteForComment(commentId: string, userId: string) {
-    const like = await prismaClient.like.findFirst({
+    const vote = await prismaClient.vote.findFirst({
       where: {
         userId,
         commentId,
       },
     })
 
-    return like
+    return vote
   }
 
   async findById(id: string) {
-    const like = await prismaClient.like.findUnique({
+    const vote = await prismaClient.vote.findUnique({
       where: {
         id,
       },
     })
 
-    return like
+    return vote
   }
 
   async delete(id: string): Promise<void> {
-    await prismaClient.like.delete({
+    await prismaClient.vote.delete({
       where: {
         id,
       },
@@ -46,4 +46,4 @@ class LikePrismaRepository implements ILikeRepository {
   }
 }
 
-export { LikePrismaRepository }
+export { VotePrismaRepository }

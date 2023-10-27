@@ -29,18 +29,18 @@ class CommentPrismaRepository implements ICommentRepository {
     return comment
   }
   async getAll(): Promise<CommentSave[]> {
-    const commentsWithRepliesAndLikes = await prismaClient.comment.findMany({
+    const commentsWithRepliesAndVotes = await prismaClient.comment.findMany({
       include: {
         replies: {
           include: {
-            likes: true,
+            votes: true,
           },
         },
-        likes: true,
+        votes: true,
       },
     })
 
-    return commentsWithRepliesAndLikes
+    return commentsWithRepliesAndVotes
   }
   async edit(data: CommentEdit): Promise<CommentSave> {
     const { commentId, newContent } = data
@@ -57,7 +57,7 @@ class CommentPrismaRepository implements ICommentRepository {
     return updatedComment
   }
   async delete(id: string): Promise<void> {
-    await prismaClient.like.deleteMany({
+    await prismaClient.vote.deleteMany({
       where: {
         commentId: id,
       },

@@ -4,9 +4,9 @@ class CommentGetAllService {
   constructor(private commentRepository: ICommentRepository) {}
 
   public async execute() {
-    const commentsWithRepliesAndLikes = await this.commentRepository.getAll()
+    const commentsWithRepliesAndVotes = await this.commentRepository.getAll()
 
-    return commentsWithRepliesAndLikes
+    return commentsWithRepliesAndVotes
   }
 }
 

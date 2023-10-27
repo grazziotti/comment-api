@@ -1,21 +1,21 @@
-export type LikeCreate = {
+export type VoteCreate = {
   commentId: string
   userId: string
 }
 
-export type LikeSave = {
+export type VoteSave = {
   id: string
   commentId: string
   userId: string
   createdAt: Date
 }
 
-export interface ILikeRepository {
-  save(data: LikeCreate): Promise<LikeSave>
+export interface IVoteRepository {
+  save(data: VoteCreate): Promise<VoteSave>
   checkUserVoteForComment(
     commentId: string,
     userId: string,
-  ): Promise<LikeSave | null>
-  findById(id: string): Promise<LikeSave | null>
+  ): Promise<VoteSave | null>
+  findById(id: string): Promise<VoteSave | null>
   delete(id: string): Promise<void>
 }

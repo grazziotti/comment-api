@@ -15,7 +15,7 @@ model User {
   username String   @unique
   password String
   comments Comment[]
-  likes Like[]
+  votes Vote[]
   createdAt DateTime @default(now())
   
   @@map("users")
@@ -30,7 +30,7 @@ model Comment {
     parentId String?
     replyTo Comment? @relation(fields: [replyToId], references: [id], name: "ReplyToComments")
     replyToId String?
-    likes Like[]
+    votes Vote[]
     createdAt DateTime @default(now())
     @@map("comments")
 
@@ -38,12 +38,12 @@ model Comment {
     repliedToBy Comment[] @relation("ReplyToComments")
 }
 
-model Like {
+model Vote {
     id String @id @default(uuid())
     user User @relation(fields: [userId], references: [id])
     userId String
     comment Comment @relation(fields: [commentId], references: [id])
     commentId String
     createdAt DateTime @default(now())
-    @@map("likes")
+    @@map("votes")
 }
