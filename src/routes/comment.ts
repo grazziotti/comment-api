@@ -18,13 +18,13 @@ commentRoutes.post(
 )
 
 commentRoutes.patch(
-  '/:commentId',
+  '/:id',
   privateRoute,
   createCommentValidation,
   validateAuth,
   commentController.edit,
 )
 
-commentRoutes.delete('/:commentId', privateRoute, commentController.delete)
+commentRoutes.delete('/:id', privateRoute, commentController.delete)
 
 export default commentRoutes

@@ -1,7 +1,7 @@
 import { ICommentRepository } from './repositories/ICommentRepository'
 
 type CommentEditRequest = {
-  commentId: string
+  id: string
   newContent: string
   userId: string
 }
@@ -10,9 +10,9 @@ class CommentEditService {
   constructor(private commentRepository: ICommentRepository) {}
 
   public async execute(data: CommentEditRequest) {
-    const { commentId, newContent, userId } = data
+    const { id, newContent, userId } = data
 
-    const comment = await this.commentRepository.findById(commentId)
+    const comment = await this.commentRepository.findById(id)
 
     if (!comment) {
       throw new Error('Comment not found.')
@@ -23,7 +23,7 @@ class CommentEditService {
     }
 
     const updatedComment = await this.commentRepository.edit({
-      commentId,
+      id,
       newContent,
     })
 

@@ -43,11 +43,11 @@ class CommentPrismaRepository implements ICommentRepository {
     return commentsWithRepliesAndVotes
   }
   async edit(data: CommentEdit): Promise<CommentSave> {
-    const { commentId, newContent } = data
+    const { id, newContent } = data
 
     const updatedComment = await prismaClient.comment.update({
       where: {
-        id: commentId,
+        id,
       },
       data: {
         content: newContent,
@@ -59,7 +59,7 @@ class CommentPrismaRepository implements ICommentRepository {
   async delete(id: string): Promise<void> {
     await prismaClient.vote.deleteMany({
       where: {
-        commentId: id,
+        id,
       },
     })
 

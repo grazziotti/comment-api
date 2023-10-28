@@ -45,7 +45,7 @@ class CommentController {
     try {
       const user = request.user as UserSave
 
-      const { commentId } = request.params
+      const { id } = request.params
       const { content } = request.body
 
       const prismaCommentRepository = new CommentPrismaRepository()
@@ -54,7 +54,7 @@ class CommentController {
       const updatedComment = await commentEditService.execute({
         newContent: content,
         userId: user.id,
-        commentId,
+        id,
       })
 
       return response.status(200).json(updatedComment)
@@ -67,14 +67,14 @@ class CommentController {
     try {
       const user = request.user as UserSave
 
-      const { commentId } = request.params
+      const { id } = request.params
 
       const prismaCommentRepository = new CommentPrismaRepository()
       const commentDeleteService = new CommentDeleteService(
         prismaCommentRepository,
       )
 
-      await commentDeleteService.execute({ commentId, userId: user.id })
+      await commentDeleteService.execute({ id, userId: user.id })
 
       return response.status(204).send()
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
