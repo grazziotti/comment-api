@@ -1,4 +1,7 @@
-import { ICommentRepository } from './repositories/ICommentRepository'
+import {
+  CommentResponse,
+  ICommentRepository,
+} from './repositories/ICommentRepository'
 
 interface CommentCreateRequest {
   content: string
@@ -9,7 +12,9 @@ interface CommentCreateRequest {
 class CommentCreateService {
   constructor(private commentRepository: ICommentRepository) {}
 
-  public async execute(commentData: CommentCreateRequest) {
+  public async execute(
+    commentData: CommentCreateRequest,
+  ): Promise<CommentResponse> {
     const { userId, content, replyToId } = commentData
 
     if (replyToId) {
@@ -31,7 +36,11 @@ class CommentCreateService {
           parentId: commentToReply.parentId,
         })
 
-        return createdComment
+        return {
+          id: createdComment.id,
+          content: createdComment.content,
+          createdAt: createdComment.createdAt,
+        }
       }
 
       const createdComment = await this.commentRepository.save({
@@ -41,7 +50,11 @@ class CommentCreateService {
         parentId: commentToReply.id,
       })
 
-      return createdComment
+      return {
+        id: createdComment.id,
+        content: createdComment.content,
+        createdAt: createdComment.createdAt,
+      }
     }
 
     const createdComment = await this.commentRepository.save({
@@ -51,7 +64,11 @@ class CommentCreateService {
       parentId: null,
     })
 
-    return createdComment
+    return {
+      id: createdComment.id,
+      content: createdComment.content,
+      createdAt: createdComment.createdAt,
+    }
   }
 }
 

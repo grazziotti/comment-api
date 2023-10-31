@@ -19,10 +19,16 @@ export type CommentSave = {
   createdAt: Date
 }
 
+export type CommentResponse = {
+  id: string
+  content: string
+  createdAt: Date
+}
+
 export interface ICommentRepository {
   save(data: CommentCreate): Promise<CommentSave>
   findById(id: string): Promise<CommentSave | null>
-  getAll(): Promise<CommentSave[]>
+  getAll(): Promise<CommentResponse[]>
   edit(data: CommentEdit): Promise<CommentSave>
   delete(id: string): Promise<void>
 }

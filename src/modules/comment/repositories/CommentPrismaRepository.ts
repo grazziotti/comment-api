@@ -2,12 +2,11 @@ import { prismaClient } from '../../../database/client'
 import {
   CommentCreate,
   CommentEdit,
-  CommentSave,
   ICommentRepository,
 } from './ICommentRepository'
 
 class CommentPrismaRepository implements ICommentRepository {
-  async save(data: CommentCreate): Promise<CommentSave> {
+  async save(data: CommentCreate) {
     const { content, userId, parentId, replyToId } = data
 
     const createdComment = await prismaClient.comment.create({
@@ -18,9 +17,10 @@ class CommentPrismaRepository implements ICommentRepository {
         replyToId,
       },
     })
+
     return createdComment
   }
-  async findById(id: string): Promise<CommentSave | null> {
+  async findById(id: string) {
     const comment = await prismaClient.comment.findUnique({
       where: {
         id,
@@ -28,21 +28,57 @@ class CommentPrismaRepository implements ICommentRepository {
     })
     return comment
   }
-  async getAll(): Promise<CommentSave[]> {
+  async getAll() {
     const commentsWithRepliesAndVotes = await prismaClient.comment.findMany({
-      include: {
-        replies: {
-          include: {
-            votes: true,
+      where: {
+        replyToId: null,
+      },
+      select: {
+        id: true,
+        content: true,
+        createdAt: true,
+        user: {
+          select: {
+            username: true,
           },
         },
-        votes: true,
+        replies: {
+          select: {
+            id: true,
+            content: true,
+            createdAt: true,
+            user: {
+              select: {
+                username: true,
+              },
+            },
+            replyTo: {
+              select: {
+                user: {
+                  select: {
+                    username: true,
+                  },
+                },
+              },
+            },
+            votes: {
+              select: {
+                voteType: true,
+              },
+            },
+          },
+        },
+        votes: {
+          select: {
+            voteType: true,
+          },
+        },
       },
     })
 
     return commentsWithRepliesAndVotes
   }
-  async edit(data: CommentEdit): Promise<CommentSave> {
+  async edit(data: CommentEdit) {
     const { id, newContent } = data
 
     const updatedComment = await prismaClient.comment.update({
@@ -56,7 +92,7 @@ class CommentPrismaRepository implements ICommentRepository {
 
     return updatedComment
   }
-  async delete(id: string): Promise<void> {
+  async delete(id: string) {
     await prismaClient.vote.deleteMany({
       where: {
         id,
