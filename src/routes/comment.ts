@@ -10,7 +10,7 @@ const commentController = new CommentController()
 commentRoutes.get('/', commentController.getAll)
 
 commentRoutes.post(
-  '/:replyToId?',
+  '/',
   privateRoute,
   createCommentValidation,
   validateAuth,

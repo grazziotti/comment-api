@@ -21,8 +21,7 @@ class CommentController {
     try {
       const user = request.user as UserSave
 
-      const { replyToId } = request.params
-      const { content } = request.body
+      const { content, replyToId } = request.body
 
       const prismaCommentRepository = new CommentPrismaRepository()
       const commentCreateService = new CommentCreateService(
