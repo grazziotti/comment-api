@@ -3,7 +3,6 @@ import { VotePrismaRepository } from './repositories/VotePrismaRepository'
 import { VoteCreateService } from './vote.create.service'
 import { UserSave } from '../user/repositories/IUserRepository'
 import { CommentPrismaRepository } from '../comment/repositories/CommentPrismaRepository'
-import { UserPrismaRepository } from '@/modules/user/repositories/UserPrismaRepository'
 import { VoteDeleteService } from './vote.delete.service'
 
 class VoteController {
@@ -14,11 +13,9 @@ class VoteController {
       const { commentId, voteType } = request.body
 
       const prismaVoteRepository = new VotePrismaRepository()
-      const prismaUserRepository = new UserPrismaRepository()
       const prismaCommentRepository = new CommentPrismaRepository()
       const voteCreateService = new VoteCreateService(
         prismaVoteRepository,
-        prismaUserRepository,
         prismaCommentRepository,
       )
 
@@ -28,7 +25,7 @@ class VoteController {
         voteType,
       })
 
-      return response.json(createdVote)
+      return response.status(201).json(createdVote)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       return response.status(400).json({ error: error.message })
