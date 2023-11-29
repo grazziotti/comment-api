@@ -3,43 +3,51 @@
  */
 
 import { app } from '@/app'
-import { prismaClient } from '@/database/client'
 import { sign } from 'jsonwebtoken'
 import request from 'supertest'
-import { UserSave } from '../user/repositories/IUserRepository'
+import { IUserRepository, UserSave } from '../user/repositories/IUserRepository'
+import { UserPrismaRepository } from '../user/repositories/UserPrismaRepository'
+import { hash } from 'bcrypt'
+import { CommentPrismaRepository } from './repositories/CommentPrismaRepository'
+import { ICommentRepository } from './repositories/ICommentRepository'
 
-describe('comment controller', () => {
-  let user: UserSave
-  let user2: UserSave
-  let userToken: string
-  let user2Token: string
+let userRepository: IUserRepository
+let commentRepository: ICommentRepository
+let user: UserSave
+let user2: UserSave
+let userToken: string
+let user2Token: string
 
-  beforeAll(async () => {
-    user = await prismaClient.user.create({
-      data: {
-        username: 'user1',
-        password: 'TestPassword1234$',
-      },
-    })
+beforeAll(async () => {
+  userRepository = new UserPrismaRepository()
+  commentRepository = new CommentPrismaRepository()
 
-    user2 = await prismaClient.user.create({
-      data: {
-        username: 'user2',
-        password: 'TestPassword1234$',
-      },
-    })
+  const password = 'TestPassword1234$'
 
-    userToken = sign(
-      { id: user.id, username: user.username },
-      process.env.JWT_SECRET as string,
-    )
+  const passwordHash = await hash(password, 8)
 
-    user2Token = sign(
-      { id: user2.id, username: user2.username },
-      process.env.JWT_SECRET as string,
-    )
+  user = await userRepository.save({
+    username: 'user1',
+    password: passwordHash,
   })
 
+  user2 = await userRepository.save({
+    username: 'user2',
+    password: passwordHash,
+  })
+
+  userToken = sign(
+    { id: user.id, username: user.username },
+    process.env.JWT_SECRET as string,
+  )
+
+  user2Token = sign(
+    { id: user2.id, username: user2.username },
+    process.env.JWT_SECRET as string,
+  )
+})
+
+describe('comment controller', () => {
   describe('get comments', () => {
     it('should be possible to list the comments with their replies', async () => {
       const createdCommentResponse = await request(app)
@@ -79,9 +87,9 @@ describe('comment controller', () => {
           content: 'Test content',
         })
 
-      const comment = await prismaClient.comment.findUnique({
-        where: { id: createdCommentResponse.body.id },
-      })
+      const comment = await commentRepository.findById(
+        createdCommentResponse.body.id,
+      )
 
       expect(createdCommentResponse.status).toBe(201)
       expect(createdCommentResponse.body).toHaveProperty('id')
@@ -136,9 +144,9 @@ describe('comment controller', () => {
           replyToId: createdCommentResponse.body.id,
         })
 
-      const reply = await prismaClient.comment.findUnique({
-        where: { id: createdReplyResponse.body.id },
-      })
+      const reply = await commentRepository.findById(
+        createdReplyResponse.body.id,
+      )
 
       expect(createdReplyResponse.body).toHaveProperty('id')
       expect(createdReplyResponse.status).toBe(201)
@@ -191,7 +199,7 @@ describe('comment controller', () => {
         })
 
       const response = await request(app)
-        .patch(`/api/v1/comments/${createdCommentResponse.body.id}`)
+        .put(`/api/v1/comments/${createdCommentResponse.body.id}`)
         .set('Authorization', `Bearer ${userToken}`)
         .send({
           content: 'Test edited content',
@@ -211,7 +219,7 @@ describe('comment controller', () => {
         })
 
       const response = await request(app)
-        .patch(`/api/v1/comments/${createdCommentResponse.body.id}`)
+        .put(`/api/v1/comments/${createdCommentResponse.body.id}`)
         .send({
           content: 'Test edited content',
         })
@@ -228,7 +236,7 @@ describe('comment controller', () => {
         })
 
       const response = await request(app)
-        .patch(`/api/v1/comments/${createdCommentResponse.body.id}`)
+        .put(`/api/v1/comments/${createdCommentResponse.body.id}`)
         .set('Authorization', `Bearer ${user2Token}`)
         .send({
           content: 'Test edited content',
@@ -242,7 +250,7 @@ describe('comment controller', () => {
 
     it('should not be possible to edit a non-existent comment', async () => {
       const response = await request(app)
-        .patch('/api/v1/comments/123')
+        .put('/api/v1/comments/123')
         .set('Authorization', `Bearer ${userToken}`)
         .send({
           content: 'Test content',
@@ -261,7 +269,7 @@ describe('comment controller', () => {
         })
 
       const response = await request(app)
-        .patch(`/api/v1/comments/${createdCommentResponse.body.id}`)
+        .put(`/api/v1/comments/${createdCommentResponse.body.id}`)
         .set('Authorization', `Bearer ${userToken}`)
         .send()
 
@@ -277,7 +285,7 @@ describe('comment controller', () => {
         })
 
       const response = await request(app)
-        .patch(`/api/v1/comments/${createdCommentResponse.body.id}`)
+        .put(`/api/v1/comments/${createdCommentResponse.body.id}`)
         .set('Authorization', `Bearer ${userToken}`)
         .send()
 
