@@ -40,6 +40,7 @@ class CommentCreateService {
           id: createdComment.id,
           content: createdComment.content,
           createdAt: createdComment.createdAt,
+          reply: true,
         }
       }
 
@@ -54,6 +55,7 @@ class CommentCreateService {
         id: createdComment.id,
         content: createdComment.content,
         createdAt: createdComment.createdAt,
+        reply: true,
       }
     }
 

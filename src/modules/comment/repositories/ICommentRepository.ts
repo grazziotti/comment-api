@@ -23,6 +23,7 @@ export type CommentResponse = {
   id: string
   content: string
   createdAt: Date
+  reply?: boolean
 }
 
 export interface ICommentRepository {
