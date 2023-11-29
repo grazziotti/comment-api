@@ -3,12 +3,20 @@ import { body } from 'express-validator'
 export const createUserValidation = [
   body('username')
     .isLength({ min: 2 })
+    .withMessage('Username must have at least 2 characters.')
+    .isLength({ max: 30 })
+    .withMessage('Username must have at most 30 characters.')
     .trim()
     .isLowercase()
+    .withMessage('Username must be in lowercase.')
     .not()
     .matches(/\s/)
+    .withMessage('Username must not contain spaces.')
+    .matches(/[a-zA-Z]/)
+    .withMessage('Username must contain at least one letter.')
+    .matches(/^[a-zA-Z0-9_-]+$/)
     .withMessage(
-      'Username must be at least 2 characters long, should not contain spaces, and should be in lowercase.',
+      'Username must contain only letters, numbers, hyphens, and underscores.',
     ),
   body('password')
     .isLength({ min: 8 })
