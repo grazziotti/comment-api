@@ -1,3 +1,4 @@
+import { hash } from 'bcrypt'
 import { CommentInMemoryRepository } from '../comment/repositories/CommentInMemoryRepository'
 import { UserSave } from '../user/repositories/IUserRepository'
 import { UserInMemoryRepository } from '../user/repositories/UserInMemoryRepository'
@@ -18,14 +19,18 @@ beforeEach(async () => {
   userInMemoryRepository = new UserInMemoryRepository()
   voteDeleteService = new VoteDeleteService(voteInMemoryRepository)
 
+  const password = 'TestPassword1234$'
+
+  const passwordHash = await hash(password, 8)
+
   user = await userInMemoryRepository.save({
     username: 'user1_test',
-    password: 'TestPassword1234$',
+    password: passwordHash,
   })
 
   user2 = await userInMemoryRepository.save({
     username: 'user2_test',
-    password: 'TestPassword1234$',
+    password: passwordHash,
   })
 })
 

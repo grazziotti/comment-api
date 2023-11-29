@@ -11,6 +11,7 @@ import { ICommentRepository } from '../comment/repositories/ICommentRepository'
 import { UserPrismaRepository } from '../user/repositories/UserPrismaRepository'
 import { IVoteRepository } from './repositories/IVoteRepository'
 import { VotePrismaRepository } from './repositories/VotePrismaRepository'
+import { hash } from 'bcrypt'
 
 let commentRepository: ICommentRepository
 let userRepository: IUserRepository
@@ -25,14 +26,18 @@ beforeAll(async () => {
   userRepository = new UserPrismaRepository()
   voteRepository = new VotePrismaRepository()
 
+  const password = 'TestPassword1234$'
+
+  const passwordHash = await hash(password, 8)
+
   user = await userRepository.save({
     username: 'user1',
-    password: 'TestPassword1234$',
+    password: passwordHash,
   })
 
   user2 = await userRepository.save({
     username: 'user2',
-    password: 'TestPassword1234$',
+    password: passwordHash,
   })
 
   userToken = sign(
@@ -179,6 +184,7 @@ describe('vote controller', () => {
       expect(response.status).toBe(400)
       expect(response.body.error).toBe('User has already voted this comment.')
     })
+
     it('should not create a vote without a token', async () => {
       const comment = {
         content: 'Test content',
@@ -196,6 +202,7 @@ describe('vote controller', () => {
 
       expect(response.status).toBe(401)
     })
+
     it('should not create a vote without a valid token', async () => {
       const comment = {
         content: 'Test content',
