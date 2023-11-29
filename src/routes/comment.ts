@@ -17,7 +17,7 @@ commentRoutes.post(
   commentController.create,
 )
 
-commentRoutes.patch(
+commentRoutes.put(
   '/:id',
   privateRoute,
   createCommentValidation,
