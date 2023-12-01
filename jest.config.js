@@ -9,4 +9,8 @@ module.exports = {
   moduleNameMapper: {
     '@/(.*)': '<rootDir>/src/$1',
   },
+  preset: 'ts-jest',
+  clearMocks: true,
+  coverageProvider: 'v8',
+  testMatch: ['**/*.spec.ts'],
 }
