@@ -17,7 +17,8 @@ model User {
   comments Comment[]
   votes Vote[]
   createdAt DateTime @default(now())
-  
+  deletedAt DateTime? 
+
   @@map("users")
 }
 
