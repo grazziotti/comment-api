@@ -20,6 +20,7 @@ beforeEach(async () => {
   voteCreateService = new VoteCreateService(
     voteInMemoryRepository,
     commentInMemoryRepository,
+    userInMemoryRepository,
   )
 
   const password = 'TestPassword1234$'
@@ -151,5 +152,34 @@ describe('create vote service', () => {
         voteType: 'upVote',
       }),
     ).rejects.toEqual(new Error('User has already voted this comment.'))
+  })
+
+  it('should not be able to create a vote from an inactive user', async () => {
+    const password = 'TestPassword1234$'
+    const passwordHash = await hash(password, 8)
+
+    const user = await userInMemoryRepository.save({
+      username: 'user3_test',
+      password: passwordHash,
+    })
+
+    const comment = {
+      content: 'Test content',
+      userId: user.id,
+      parentId: null,
+      replyToId: null,
+    }
+
+    const createdCommentResult = await commentInMemoryRepository.save(comment)
+
+    await userInMemoryRepository.delete(user.id)
+
+    await expect(
+      voteCreateService.execute({
+        commentId: createdCommentResult.id,
+        userId: user.id,
+        voteType: 'upVote',
+      }),
+    ).rejects.toEqual(new Error('User not found.'))
   })
 })

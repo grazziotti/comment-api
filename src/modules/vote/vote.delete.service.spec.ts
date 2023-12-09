@@ -17,7 +17,10 @@ beforeEach(async () => {
   voteInMemoryRepository = new VoteInMemoryRepository()
   commentInMemoryRepository = new CommentInMemoryRepository()
   userInMemoryRepository = new UserInMemoryRepository()
-  voteDeleteService = new VoteDeleteService(voteInMemoryRepository)
+  voteDeleteService = new VoteDeleteService(
+    voteInMemoryRepository,
+    userInMemoryRepository,
+  )
 
   const password = 'TestPassword1234$'
 
@@ -96,5 +99,40 @@ describe('delete vote service', () => {
         voteId: createdVoteResult.id,
       }),
     ).rejects.toEqual(new Error('User is not authorized to delete this vote.'))
+  })
+  it('should not be able to delete a vote from an inactive user', async () => {
+    const password = 'TestPassword1234$'
+    const passwordHash = await hash(password, 8)
+
+    const user = await userInMemoryRepository.save({
+      username: 'user3_test',
+      password: passwordHash,
+    })
+
+    const comment = {
+      content: 'Test content',
+      userId: user.id,
+      parentId: null,
+      replyToId: null,
+    }
+
+    const createdCommentResult = await commentInMemoryRepository.save(comment)
+
+    const vote = {
+      commentId: createdCommentResult.id,
+      userId: user2.id,
+      voteType: 'upVote',
+    }
+
+    const createdVoteResult = await voteInMemoryRepository.save(vote)
+
+    await userInMemoryRepository.delete(user.id)
+
+    await expect(
+      voteDeleteService.execute({
+        userId: user.id,
+        voteId: createdVoteResult.id,
+      }),
+    ).rejects.toEqual(new Error('User not found.'))
   })
 })

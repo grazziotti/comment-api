@@ -4,6 +4,7 @@ import { VoteCreateService } from './vote.create.service'
 import { UserSave } from '../user/repositories/IUserRepository'
 import { CommentPrismaRepository } from '../comment/repositories/CommentPrismaRepository'
 import { VoteDeleteService } from './vote.delete.service'
+import { UserPrismaRepository } from '../user/repositories/UserPrismaRepository'
 
 class VoteController {
   async create(request: Request, response: Response): Promise<Response> {
@@ -14,9 +15,11 @@ class VoteController {
 
       const prismaVoteRepository = new VotePrismaRepository()
       const prismaCommentRepository = new CommentPrismaRepository()
+      const prismaUserRepository = new UserPrismaRepository()
       const voteCreateService = new VoteCreateService(
         prismaVoteRepository,
         prismaCommentRepository,
+        prismaUserRepository,
       )
 
       const createdVote = await voteCreateService.execute({
@@ -38,7 +41,12 @@ class VoteController {
       const { id } = request.params
 
       const prismaVoteRepository = new VotePrismaRepository()
-      const voteDeleteService = new VoteDeleteService(prismaVoteRepository)
+      const prismaUserRepository = new UserPrismaRepository()
+
+      const voteDeleteService = new VoteDeleteService(
+        prismaVoteRepository,
+        prismaUserRepository,
+      )
 
       await voteDeleteService.execute({ voteId: id, userId: user.id })
 
