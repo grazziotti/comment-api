@@ -37,6 +37,16 @@ class VotePrismaRepository implements IVoteRepository {
     return vote
   }
 
+  async findVotesByCommentId(commentId: string) {
+    const votes = await prismaClient.vote.findMany({
+      where: {
+        commentId: commentId,
+      },
+    })
+
+    return votes
+  }
+
   async delete(id: string): Promise<void> {
     await prismaClient.vote.delete({
       where: {
