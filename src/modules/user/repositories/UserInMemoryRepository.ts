@@ -1,4 +1,9 @@
-import { IUserRepository, UserCreate, UserSave } from './IUserRepository'
+import {
+  IUserRepository,
+  UserCreate,
+  UserEdit,
+  UserSave,
+} from './IUserRepository'
 import { randomUUID } from 'crypto'
 
 class UserInMemoryRepository implements IUserRepository {
@@ -13,19 +18,37 @@ class UserInMemoryRepository implements IUserRepository {
       ...data,
       id,
       createdAt,
+      deletedAt: null,
     }
 
     this.users.push(user)
 
     return user
   }
+
   async findByUsername(username: string): Promise<UserSave | null> {
     const user = this.users.find((user) => user.username === username)
     return user ? user : null
   }
+
   async findById(id: string): Promise<UserSave | null> {
     const user = this.users.find((user) => user.id === id)
     return user ? user : null
+  }
+
+  async edit(data: UserEdit): Promise<UserSave> {
+    const { id, password } = data
+
+    const userIndex = this.users.findIndex((user) => user.id === id)
+
+    this.users[userIndex].password = password
+
+    return this.users[userIndex]
+  }
+
+  async delete(id: string): Promise<void> {
+    const userIndex = this.users.findIndex((user) => user.id === id)
+    this.users[userIndex].deletedAt = new Date()
   }
 }
 

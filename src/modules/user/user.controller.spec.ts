@@ -6,6 +6,8 @@ import { app } from '@/app'
 import request from 'supertest'
 import { IUserRepository } from './repositories/IUserRepository'
 import { UserPrismaRepository } from './repositories/UserPrismaRepository'
+import { sign } from 'jsonwebtoken'
+import { hash } from 'bcrypt'
 
 let userRepository: IUserRepository
 
@@ -21,7 +23,7 @@ describe('user controller', () => {
         password: 'TestPassword1234$',
       })
 
-      expect(response.status).toBe(200)
+      expect(response.status).toBe(201)
       expect(response.body).toHaveProperty('id')
     })
 
@@ -136,6 +138,177 @@ describe('user controller', () => {
       expect(response.body.errors[0].msg).toBe(
         'Username must contain only letters, numbers, hyphens, and underscores.',
       )
+    })
+  })
+  describe('get user', () => {
+    it('should be able to get user data', async () => {
+      const password = 'TestPassword1234$'
+      const passwordHash = await hash(password, 8)
+
+      const user = await userRepository.save({
+        username: 'user4',
+        password: passwordHash,
+      })
+
+      const userToken = sign(
+        { id: user.id, username: user.username },
+        process.env.JWT_SECRET as string,
+      )
+
+      const response = await request(app)
+        .get('/api/v1/users')
+        .set('Authorization', `Bearer ${userToken}`)
+
+      expect(response.status).toBe(200)
+      expect(response.body.id).toEqual(user.id)
+    })
+    it('should not be able to get user data with an invalid token', async () => {
+      const password = 'TestPassword1234$'
+      const passwordHash = await hash(password, 8)
+
+      await userRepository.save({
+        username: 'user5',
+        password: passwordHash,
+      })
+
+      const response = await request(app)
+        .get('/api/v1/users')
+        .set('Authorization', 'Bearer invalid')
+
+      expect(response.status).toBe(401)
+      expect(response.body.message).toEqual('invalid token.')
+    })
+
+    it('should not be able to get user data without a token', async () => {
+      const password = 'TestPassword1234$'
+      const passwordHash = await hash(password, 8)
+
+      await userRepository.save({
+        username: 'user6',
+        password: passwordHash,
+      })
+
+      const response = await request(app).get('/api/v1/users')
+
+      expect(response.status).toBe(401)
+      expect(response.body.message).toEqual('invalid token.')
+    })
+  })
+  describe('edit user', () => {
+    it('should be able to edit a user', async () => {
+      const password = 'TestPassword1234$'
+      const passwordHash = await hash(password, 8)
+
+      const user = await userRepository.save({
+        username: 'user1',
+        password: passwordHash,
+      })
+
+      const userToken = sign(
+        { id: user.id, username: user.username },
+        process.env.JWT_SECRET as string,
+      )
+
+      const response = await request(app)
+        .put('/api/v1/users/')
+        .set('Authorization', `Bearer ${userToken}`)
+        .send({
+          password: 'Jujuba$1234',
+        })
+
+      expect(response.status).toBe(200)
+      expect(response.body).toHaveProperty('id')
+    })
+
+    it('should not be able to edit a user with an invalid password', async () => {
+      const password = 'TestPassword1234$'
+      const passwordHash = await hash(password, 8)
+
+      const user = await userRepository.save({
+        username: 'user2',
+        password: passwordHash,
+      })
+
+      const userToken = sign(
+        { id: user.id, username: user.username },
+        process.env.JWT_SECRET as string,
+      )
+
+      const response = await request(app)
+        .put('/api/v1/users/')
+        .set('Authorization', `Bearer ${userToken}`)
+        .send({
+          password: 'invalidPassword',
+        })
+
+      expect(response.status).toBe(400)
+      expect(response.body.errors[0].msg).toBe(
+        'Password must be at least 8 characters long, one uppercase letter, one lowercase letter, one number, and one special character',
+      )
+    })
+
+    it('should not be able to edit a user with an invalid token', async () => {
+      const response = await request(app)
+        .put('/api/v1/users/')
+        .set('Authorization', 'Bearer invalid-token')
+        .send({
+          password: 'Jujuba$1234',
+        })
+
+      expect(response.status).toBe(401)
+      expect(response.body.message).toBe('invalid token.')
+    })
+
+    it('should not be able to edit a user without a token', async () => {
+      const response = await request(app).put('/api/v1/users/').send({
+        password: 'Jujuba$1234',
+      })
+
+      expect(response.status).toBe(401)
+      expect(response.body.message).toBe('invalid token.')
+    })
+  })
+  describe('delete user', () => {
+    it('should be able to delete a user', async () => {
+      const password = 'TestPassword1234$'
+      const passwordHash = await hash(password, 8)
+
+      const user = await userRepository.save({
+        username: 'user3',
+        password: passwordHash,
+      })
+
+      const userToken = sign(
+        { id: user.id, username: user.username },
+        process.env.JWT_SECRET as string,
+      )
+
+      const response = await request(app)
+        .delete('/api/v1/users/')
+        .set('Authorization', `Bearer ${userToken}`)
+
+      expect(response.status).toBe(204)
+
+      const deletedUser = await userRepository.findById(user.id)
+
+      expect(deletedUser).toHaveProperty('deletedAt')
+      expect(deletedUser?.deletedAt).not.toBe(null)
+    })
+
+    it('should not be able to delete a user without authentication', async () => {
+      const response = await request(app).delete('/api/v1/users/')
+
+      expect(response.status).toBe(401)
+      expect(response.body.message).toBe('invalid token.')
+    })
+
+    it('should not be able to delete a user with an invalid token', async () => {
+      const response = await request(app)
+        .delete('/api/v1/users/')
+        .set('Authorization', 'Bearer invalid-token')
+
+      expect(response.status).toBe(401)
+      expect(response.body.message).toBe('invalid token.')
     })
   })
 })

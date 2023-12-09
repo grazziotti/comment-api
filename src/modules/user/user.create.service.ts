@@ -20,7 +20,12 @@ class CreateUserService {
       password: passwordHash,
     })
 
-    return userCreated
+    return {
+      id: userCreated.id,
+      username: userCreated.username,
+      createdAt: userCreated.createdAt,
+      deletedAt: userCreated.deletedAt,
+    }
   }
 }
 
