@@ -13,7 +13,7 @@ class SessionService {
   public async execute({ username, password }: Request) {
     const user = await this.userRepository.findByUsername(username)
 
-    if (!user) {
+    if (!user || user.deletedAt !== null) {
       throw new Error('Invalid credentials.')
     }
 
