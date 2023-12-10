@@ -2,6 +2,7 @@ import { prismaClient } from '../../../database/client'
 import {
   CommentCreate,
   CommentEdit,
+  CommentSave,
   ICommentRepository,
 } from './ICommentRepository'
 
@@ -28,53 +29,19 @@ class CommentPrismaRepository implements ICommentRepository {
     })
     return comment
   }
-  async getAll() {
-    const commentsWithRepliesAndVotes = await prismaClient.comment.findMany({
+
+  async findRepliesByCommentId(id: string): Promise<CommentSave[]> {
+    const replies = await prismaClient.comment.findMany({
       where: {
-        replyToId: null,
-      },
-      select: {
-        id: true,
-        content: true,
-        createdAt: true,
-        user: {
-          select: {
-            username: true,
-          },
-        },
-        replies: {
-          select: {
-            id: true,
-            content: true,
-            createdAt: true,
-            user: {
-              select: {
-                username: true,
-              },
-            },
-            replyTo: {
-              select: {
-                user: {
-                  select: {
-                    username: true,
-                  },
-                },
-              },
-            },
-            votes: {
-              select: {
-                voteType: true,
-              },
-            },
-          },
-        },
-        votes: {
-          select: {
-            voteType: true,
-          },
-        },
+        parentId: id,
       },
     })
+
+    return replies
+  }
+
+  async getAll() {
+    const commentsWithRepliesAndVotes = await prismaClient.comment.findMany()
 
     return commentsWithRepliesAndVotes
   }
@@ -95,7 +62,7 @@ class CommentPrismaRepository implements ICommentRepository {
   async delete(id: string) {
     await prismaClient.vote.deleteMany({
       where: {
-        id,
+        commentId: id,
       },
     })
 
