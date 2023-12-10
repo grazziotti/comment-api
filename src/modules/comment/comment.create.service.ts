@@ -1,3 +1,4 @@
+import { IUserRepository } from '../user/repositories/IUserRepository'
 import {
   CommentResponse,
   ICommentRepository,
@@ -10,12 +11,21 @@ interface CommentCreateRequest {
 }
 
 class CommentCreateService {
-  constructor(private commentRepository: ICommentRepository) {}
+  constructor(
+    private commentRepository: ICommentRepository,
+    private userRepository: IUserRepository,
+  ) {}
 
   public async execute(
     commentData: CommentCreateRequest,
   ): Promise<CommentResponse> {
     const { userId, content, replyToId } = commentData
+
+    const user = await this.userRepository.findById(userId)
+
+    if (!user || user.deletedAt !== null) {
+      throw new Error('User not found.')
+    }
 
     if (replyToId) {
       const commentToReply = await this.commentRepository.findById(replyToId)

@@ -12,8 +12,11 @@ let user2: UserSave
 
 beforeEach(async () => {
   commentInMemoryRepository = new CommentInMemoryRepository()
-  commentCreateService = new CommentCreateService(commentInMemoryRepository)
   userInMemoryRepository = new UserInMemoryRepository()
+  commentCreateService = new CommentCreateService(
+    commentInMemoryRepository,
+    userInMemoryRepository,
+  )
 
   const password = 'TestPassword1234$'
 
@@ -93,6 +96,27 @@ describe('create comment service', () => {
 
     await expect(commentCreateService.execute(reply)).rejects.toEqual(
       new Error('Comment to reply not found.'),
+    )
+  })
+
+  it('should not be able to create a comment from an inactive user', async () => {
+    const password = 'TestPassword1234$'
+    const passwordHash = await hash(password, 8)
+
+    const user = await userInMemoryRepository.save({
+      username: 'user3_test',
+      password: passwordHash,
+    })
+
+    const comment = {
+      content: 'Test content',
+      userId: user.id,
+    }
+
+    await userInMemoryRepository.delete(user.id)
+
+    await expect(commentCreateService.execute(comment)).rejects.toEqual(
+      new Error('User not found.'),
     )
   })
 })
