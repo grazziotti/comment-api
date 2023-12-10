@@ -7,6 +7,8 @@ import { privateRoute } from '@/config/passport'
 const commentRoutes = Router()
 const commentController = new CommentController()
 
+commentRoutes.get('/:id', commentController.get)
+
 commentRoutes.get('/', commentController.getAll)
 
 commentRoutes.post(
