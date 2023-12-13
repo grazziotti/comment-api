@@ -13,11 +13,13 @@ class CommentInMemoryRepository implements ICommentRepository {
   async save(data: CommentCreate): Promise<CommentSave> {
     const id = randomUUID()
     const createdAt = new Date()
+    const updatedAt = new Date()
 
     const comment: CommentSave = {
       ...data,
       id,
       createdAt,
+      updatedAt,
     }
 
     this.comments.push(comment)
@@ -30,6 +32,7 @@ class CommentInMemoryRepository implements ICommentRepository {
     const commentIndex = this.comments.findIndex((comment) => comment.id === id)
 
     this.comments[commentIndex].content = newContent
+    this.comments[commentIndex].updatedAt = new Date()
 
     return this.comments[commentIndex]
   }

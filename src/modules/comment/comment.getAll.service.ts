@@ -70,6 +70,7 @@ class CommentGetAllService {
                 id: reply.id,
                 content: reply.content,
                 createdAt: reply.createdAt,
+                updatedAt: reply.updatedAt,
                 score: replyUpVotes.length,
                 isUserActive: replyUser.deletedAt ? true : false,
                 user: {
@@ -99,6 +100,7 @@ class CommentGetAllService {
           id: comment.id,
           content: comment.content,
           createdAt: comment.createdAt,
+          updatedAt: comment.updatedAt,
           score: commentUpVotes.length,
           isUserActive: commentUser.deletedAt ? true : false,
           user: {

@@ -41,6 +41,7 @@ class CommentEditService {
       id: updatedComment.id,
       content: updatedComment.content,
       createdAt: updatedComment.createdAt,
+      updatedAt: updatedComment.updatedAt,
     }
   }
 }

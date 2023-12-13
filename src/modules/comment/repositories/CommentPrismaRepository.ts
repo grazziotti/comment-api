@@ -54,6 +54,7 @@ class CommentPrismaRepository implements ICommentRepository {
       },
       data: {
         content: newContent,
+        updatedAt: new Date(),
       },
     })
 
