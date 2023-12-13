@@ -50,6 +50,7 @@ describe('edit comment service', () => {
     const result = await commentEditService.execute(editedComment)
 
     expect(result.content).toBe('Test content edited')
+    expect(result.updatedAt).not.toBeNull()
   })
   it('should not be able to edit a nonexistent comment', async () => {
     const editedComment = {

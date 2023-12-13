@@ -17,6 +17,7 @@ export type CommentSave = {
   parentId: string | null
   replyToId: string | null
   createdAt: Date
+  updatedAt: Date | null
 }
 
 export type CommentResponse = {

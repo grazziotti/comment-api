@@ -37,6 +37,7 @@ class CommentPrismaRepository implements ICommentRepository {
         id: true,
         content: true,
         createdAt: true,
+        updatedAt: true,
         user: {
           select: {
             username: true,
@@ -47,6 +48,7 @@ class CommentPrismaRepository implements ICommentRepository {
             id: true,
             content: true,
             createdAt: true,
+            updatedAt: true,
             user: {
               select: {
                 username: true,
@@ -87,6 +89,7 @@ class CommentPrismaRepository implements ICommentRepository {
       },
       data: {
         content: newContent,
+        updatedAt: new Date(),
       },
     })
 

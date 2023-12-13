@@ -32,6 +32,7 @@ model Comment {
     replyToId String?
     votes Vote[]
     createdAt DateTime @default(now())
+    updatedAt DateTime?
     @@map("comments")
 
     replies     Comment[] @relation("ChildComments")

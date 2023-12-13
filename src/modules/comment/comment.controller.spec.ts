@@ -208,6 +208,7 @@ describe('comment controller', () => {
       expect(response.status).toBe(200)
       expect(response.body.id).toBe(createdCommentResponse.body.id)
       expect(response.body.content).toBe('Test edited content')
+      expect(response.body.updatedAt).not.toBeNull()
     })
 
     it('should not be possible to edit a comment without an authentication token', async () => {
