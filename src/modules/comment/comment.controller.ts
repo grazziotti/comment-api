@@ -5,12 +5,18 @@ import { CommentGetAllService } from './comment.getAll.service'
 import { CommentCreateService } from './comment.create.service'
 import { CommentEditService } from './comment.edit.service'
 import { CommentDeleteService } from './comment.delete.service'
+import { UserPrismaRepository } from '../user/repositories/UserPrismaRepository'
+import { VotePrismaRepository } from '../vote/repositories/VotePrismaRepository'
 
 class CommentController {
   async getAll(request: Request, response: Response): Promise<Response> {
     const prismaCommentRepository = new CommentPrismaRepository()
+    const prismaUserRepository = new UserPrismaRepository()
+    const prismaVoteRepository = new VotePrismaRepository()
     const commentGetAllService = new CommentGetAllService(
       prismaCommentRepository,
+      prismaVoteRepository,
+      prismaUserRepository,
     )
 
     const commentsWithRepliesAndLikes = await commentGetAllService.execute()

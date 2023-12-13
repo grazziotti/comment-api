@@ -31,7 +31,7 @@ export interface ICommentRepository {
   save(data: CommentCreate): Promise<CommentSave>
   findById(id: string): Promise<CommentSave | null>
   findRepliesByCommentId(id: string): Promise<CommentSave[]>
-  getAll(): Promise<CommentResponse[]>
+  getAll(): Promise<CommentSave[]>
   edit(data: CommentEdit): Promise<CommentSave>
   delete(id: string): Promise<void>
 }

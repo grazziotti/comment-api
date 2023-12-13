@@ -38,56 +38,9 @@ class CommentPrismaRepository implements ICommentRepository {
     return comment
   }
   async getAll() {
-    const commentsWithRepliesAndVotes = await prismaClient.comment.findMany({
-      where: {
-        replyToId: null,
-      },
-      select: {
-        id: true,
-        content: true,
-        createdAt: true,
-        updatedAt: true,
-        user: {
-          select: {
-            username: true,
-          },
-        },
-        replies: {
-          select: {
-            id: true,
-            content: true,
-            createdAt: true,
-            updatedAt: true,
-            user: {
-              select: {
-                username: true,
-              },
-            },
-            replyTo: {
-              select: {
-                user: {
-                  select: {
-                    username: true,
-                  },
-                },
-              },
-            },
-            votes: {
-              select: {
-                voteType: true,
-              },
-            },
-          },
-        },
-        votes: {
-          select: {
-            voteType: true,
-          },
-        },
-      },
-    })
+    const comments = await prismaClient.comment.findMany()
 
-    return commentsWithRepliesAndVotes
+    return comments
   }
   async edit(data: CommentEdit) {
     const { id, newContent } = data
