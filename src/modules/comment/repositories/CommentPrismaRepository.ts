@@ -20,6 +20,15 @@ class CommentPrismaRepository implements ICommentRepository {
 
     return createdComment
   }
+  async findRepliesByCommentId(id: string) {
+    const replies = await prismaClient.comment.findMany({
+      where: {
+        parentId: id,
+      },
+    })
+
+    return replies
+  }
   async findById(id: string) {
     const comment = await prismaClient.comment.findUnique({
       where: {
