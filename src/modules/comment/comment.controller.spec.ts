@@ -65,8 +65,9 @@ describe('comment controller', () => {
           replyToId: createdCommentResponse.body.id,
         })
 
-      const commentsWithRepliesResponse =
-        await request(app).get('/api/v1/comments')
+      const commentsWithRepliesResponse = await request(app).get(
+        '/api/v1/comments/public',
+      )
 
       expect(commentsWithRepliesResponse.status).toBe(200)
       expect(commentsWithRepliesResponse.body[0].id).toBe(

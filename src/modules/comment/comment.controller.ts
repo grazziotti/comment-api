@@ -1,27 +1,47 @@
 import { Request, Response } from 'express'
 import { CommentPrismaRepository } from './repositories/CommentPrismaRepository'
 import { UserSave } from '../user/repositories/IUserRepository'
-import { CommentGetAllService } from './comment.getAll.service'
+import { CommentGetAllPublicService } from './comment.getAllPublic.service'
 import { CommentCreateService } from './comment.create.service'
 import { CommentEditService } from './comment.edit.service'
 import { CommentDeleteService } from './comment.delete.service'
 import { UserPrismaRepository } from '../user/repositories/UserPrismaRepository'
 import { VotePrismaRepository } from '../vote/repositories/VotePrismaRepository'
+import { CommentGetAllPrivateService } from './comment.getAllPrivate.service'
 
 class CommentController {
-  async getAll(request: Request, response: Response): Promise<Response> {
+  async getAllPrivate(request: Request, response: Response): Promise<Response> {
+    const user = request.user as UserSave
+
     const prismaCommentRepository = new CommentPrismaRepository()
     const prismaUserRepository = new UserPrismaRepository()
     const prismaVoteRepository = new VotePrismaRepository()
-    const commentGetAllService = new CommentGetAllService(
+    const commentGetAllPrivateService = new CommentGetAllPrivateService(
       prismaCommentRepository,
       prismaVoteRepository,
       prismaUserRepository,
     )
 
-    const commentsWithRepliesAndLikes = await commentGetAllService.execute()
+    const commentsWithRepliesAndVotes =
+      await commentGetAllPrivateService.execute(user.id)
 
-    return response.json(commentsWithRepliesAndLikes)
+    return response.json(commentsWithRepliesAndVotes)
+  }
+
+  async getAllPublic(request: Request, response: Response): Promise<Response> {
+    const prismaCommentRepository = new CommentPrismaRepository()
+    const prismaUserRepository = new UserPrismaRepository()
+    const prismaVoteRepository = new VotePrismaRepository()
+    const commentGetAllPublicService = new CommentGetAllPublicService(
+      prismaCommentRepository,
+      prismaVoteRepository,
+      prismaUserRepository,
+    )
+
+    const commentsWithRepliesAndVotes =
+      await commentGetAllPublicService.execute()
+
+    return response.json(commentsWithRepliesAndVotes)
   }
   async create(request: Request, response: Response): Promise<Response> {
     try {
