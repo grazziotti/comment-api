@@ -75,6 +75,7 @@ describe('vote controller', () => {
       expect(response.body).toHaveProperty('id')
       expect(response.body.voteType).toBe('upVote')
     })
+
     it('should create a downvote for a comment', async () => {
       const comment = {
         content: 'Test content',
@@ -224,6 +225,7 @@ describe('vote controller', () => {
       expect(response.status).toBe(401)
     })
   })
+  describe('edit vote', () => {})
   describe('delete vote', () => {
     it('should delete a vote for a comment', async () => {
       const comment = {

@@ -20,5 +20,6 @@ export interface IVoteRepository {
   ): Promise<VoteSave | null>
   findById(id: string): Promise<VoteSave | null>
   findVotesByCommentId(commentId: string): Promise<VoteSave[]>
+  edit(id: string, voteType: string): Promise<VoteSave>
   delete(id: string): Promise<void>
 }
