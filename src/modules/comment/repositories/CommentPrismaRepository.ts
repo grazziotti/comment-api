@@ -58,12 +58,6 @@ class CommentPrismaRepository implements ICommentRepository {
     return updatedComment
   }
   async delete(id: string) {
-    await prismaClient.vote.deleteMany({
-      where: {
-        id,
-      },
-    })
-
     await prismaClient.comment.delete({
       where: {
         id,
