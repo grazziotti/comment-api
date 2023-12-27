@@ -4,6 +4,7 @@ import { VoteCreateService } from './vote.create.service'
 import { UserSave } from '../user/repositories/IUserRepository'
 import { CommentPrismaRepository } from '../comment/repositories/CommentPrismaRepository'
 import { VoteDeleteService } from './vote.delete.service'
+import { VoteEditService } from './vote.edit.service'
 import { UserPrismaRepository } from '../user/repositories/UserPrismaRepository'
 
 class VoteController {
@@ -34,6 +35,26 @@ class VoteController {
       return response.status(400).json({ error: error.message })
     }
   }
+
+  async edit(request: Request, response: Response): Promise<Response> {
+    try {
+      const user = request.user as UserSave
+
+      const { id } = request.params
+      const { voteType } = request.body
+
+      const prismaVoteRepository = new VotePrismaRepository()
+      const voteEditService = new VoteEditService(prismaVoteRepository)
+
+      await voteEditService.execute({ voteId: id, userId: user.id, voteType })
+
+      return response.status(200).send()
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      return response.status(400).json({ error: error.message })
+    }
+  }
+
   async delete(request: Request, response: Response): Promise<Response> {
     try {
       const user = request.user as UserSave

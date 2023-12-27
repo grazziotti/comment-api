@@ -65,8 +65,9 @@ describe('comment controller', () => {
           replyToId: createdCommentResponse.body.id,
         })
 
-      const commentsWithRepliesResponse =
-        await request(app).get('/api/v1/comments')
+      const commentsWithRepliesResponse = await request(app).get(
+        '/api/v1/comments/public',
+      )
 
       expect(commentsWithRepliesResponse.status).toBe(200)
       expect(commentsWithRepliesResponse.body[0].id).toBe(
@@ -94,7 +95,6 @@ describe('comment controller', () => {
       expect(createdCommentResponse.status).toBe(201)
       expect(createdCommentResponse.body).toHaveProperty('id')
 
-      // Check if the comment is not a reply (has no parent or replyTo)
       expect(comment?.parentId).toBe(null)
       expect(comment?.replyToId).toBe(null)
     })
@@ -151,7 +151,6 @@ describe('comment controller', () => {
       expect(createdReplyResponse.body).toHaveProperty('id')
       expect(createdReplyResponse.status).toBe(201)
 
-      // Check if the comment is a reply (has parent and replyTo)
       expect(reply?.parentId).toBe(createdCommentResponse.body.id)
       expect(reply?.replyToId).toBe(createdCommentResponse.body.id)
     })

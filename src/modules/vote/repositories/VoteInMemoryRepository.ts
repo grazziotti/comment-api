@@ -22,6 +22,7 @@ class VoteInMemoryRepository implements IVoteRepository {
     const vote = this.votes.find((vote) => vote.id === id)
     return vote ? vote : null
   }
+
   async checkUserVoteForComment(
     commentId: string,
     userId: string,
@@ -30,6 +31,14 @@ class VoteInMemoryRepository implements IVoteRepository {
       (vote) => vote.userId === userId && vote.commentId === commentId,
     )
     return vote ? vote : null
+  }
+
+  async edit(id: string, voteType: string) {
+    const vote = this.votes.find((vote) => vote.id === id) as VoteSave
+
+    vote.voteType = voteType
+
+    return vote as VoteSave
   }
 
   async delete(id: string): Promise<void> {

@@ -2,7 +2,6 @@ import { prismaClient } from '../../../database/client'
 import {
   CommentCreate,
   CommentEdit,
-  CommentSave,
   ICommentRepository,
 } from './ICommentRepository'
 
@@ -21,6 +20,15 @@ class CommentPrismaRepository implements ICommentRepository {
 
     return createdComment
   }
+  async findRepliesByCommentId(id: string) {
+    const replies = await prismaClient.comment.findMany({
+      where: {
+        parentId: id,
+      },
+    })
+
+    return replies
+  }
   async findById(id: string) {
     const comment = await prismaClient.comment.findUnique({
       where: {
@@ -30,21 +38,12 @@ class CommentPrismaRepository implements ICommentRepository {
     return comment
   }
 
-  async findRepliesByCommentId(id: string): Promise<CommentSave[]> {
-    const replies = await prismaClient.comment.findMany({
-      where: {
-        parentId: id,
-      },
-    })
-
-    return replies
-  }
-
   async getAll() {
-    const commentsWithRepliesAndVotes = await prismaClient.comment.findMany()
+    const comments = await prismaClient.comment.findMany()
 
-    return commentsWithRepliesAndVotes
+    return comments
   }
+
   async edit(data: CommentEdit) {
     const { id, newContent } = data
 
@@ -61,12 +60,6 @@ class CommentPrismaRepository implements ICommentRepository {
     return updatedComment
   }
   async delete(id: string) {
-    await prismaClient.vote.deleteMany({
-      where: {
-        commentId: id,
-      },
-    })
-
     await prismaClient.comment.delete({
       where: {
         id,

@@ -47,12 +47,26 @@ class VotePrismaRepository implements IVoteRepository {
     return votes
   }
 
+  async edit(id: string, voteType: string) {
+    const vote = await prismaClient.vote.update({
+      where: {
+        id,
+      },
+      data: {
+        voteType,
+      },
+    })
+
+    return vote
+  }
+
   async delete(id: string): Promise<void> {
     await prismaClient.vote.delete({
       where: {
         id,
       },
     })
+
     return
   }
 }

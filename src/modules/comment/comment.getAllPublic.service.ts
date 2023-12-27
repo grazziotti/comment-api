@@ -2,7 +2,35 @@ import { IUserRepository } from '../user/repositories/IUserRepository'
 import { IVoteRepository } from '../vote/repositories/IVoteRepository'
 import { ICommentRepository } from './repositories/ICommentRepository'
 
-class CommentGetAllService {
+type CommentDataType = {
+  id: string
+  content: string
+  createdAt: Date
+  updatedAt: Date | null
+  score: number
+  user: {
+    username: string
+  }
+  replies: ReplyDataType[]
+}
+
+type ReplyDataType = {
+  id: string
+  content: string
+  createdAt: Date
+  updatedAt: Date | null
+  score: number
+  user: {
+    username: string
+  }
+  replyTo: {
+    user: {
+      username: string
+    }
+  }
+}
+
+class CommentGetAllPublicService {
   constructor(
     private commentRepository: ICommentRepository,
     private voteRepository: IVoteRepository,
@@ -63,21 +91,21 @@ class CommentGetAllService {
               )
 
               const replyUpVotes = replyVotes.filter(
-                (commentVote) => commentVote.voteType === 'upVote',
+                (replyVote) => replyVote.voteType === 'upVote',
               )
 
-              return {
+              const replyDownVotes = replyVotes.filter(
+                (replyVote) => replyVote.voteType === 'downVote',
+              )
+
+              const replyData: ReplyDataType = {
                 id: reply.id,
                 content: reply.content,
                 createdAt: reply.createdAt,
                 updatedAt: reply.updatedAt,
-                score: replyUpVotes.length,
-                isUserActive: replyUser.deletedAt ? true : false,
+                score: replyUpVotes.length - replyDownVotes.length,
                 user: {
-                  username:
-                    replyUser.deletedAt !== null
-                      ? '(inactive user)'
-                      : replyUser.username,
+                  username: replyUser.username,
                 },
                 replyTo: {
                   user: {
@@ -85,6 +113,8 @@ class CommentGetAllService {
                   },
                 },
               }
+
+              return replyData
             }),
         )
 
@@ -96,21 +126,23 @@ class CommentGetAllService {
           (commentVote) => commentVote.voteType === 'upVote',
         )
 
-        return {
+        const commentDownVotes = commentVotes.filter(
+          (commentVote) => commentVote.voteType === 'downVote',
+        )
+
+        const commentData: CommentDataType = {
           id: comment.id,
           content: comment.content,
           createdAt: comment.createdAt,
           updatedAt: comment.updatedAt,
-          score: commentUpVotes.length,
-          isUserActive: commentUser.deletedAt ? true : false,
+          score: commentUpVotes.length - commentDownVotes.length,
           user: {
-            username:
-              commentUser.deletedAt !== null
-                ? '(inactive user)'
-                : commentUser.username,
+            username: commentUser.username,
           },
           replies: commentReplies,
         }
+
+        return commentData
       }),
     )
 
@@ -118,4 +150,4 @@ class CommentGetAllService {
   }
 }
 
-export { CommentGetAllService }
+export { CommentGetAllPublicService }
