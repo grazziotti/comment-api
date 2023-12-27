@@ -49,7 +49,7 @@ beforeAll(async () => {
 
 describe('comment controller', () => {
   describe('get comments', () => {
-    it('should be possible to list the comments with their replies', async () => {
+    it('should be possible to list public route comments with their replies and score', async () => {
       const createdCommentResponse = await request(app)
         .post('/api/v1/comments')
         .set('Authorization', `Bearer ${userToken}`)
@@ -70,12 +70,32 @@ describe('comment controller', () => {
       )
 
       expect(commentsWithRepliesResponse.status).toBe(200)
+      expect(commentsWithRepliesResponse.body[0]).toHaveProperty('score')
+      expect(commentsWithRepliesResponse.body[0]).not.toHaveProperty('voted')
       expect(commentsWithRepliesResponse.body[0].id).toBe(
         createdCommentResponse.body.id,
       )
       expect(commentsWithRepliesResponse.body[0].replies[0].id).toBe(
         createdReplyResponse.body.id,
       )
+    })
+
+    it('should be possible to list private route comments with their replies and score', async () => {
+      const commentsWithRepliesResponse = await request(app)
+        .get('/api/v1/comments/private')
+        .set('Authorization', `Bearer ${user2Token}`)
+
+      expect(commentsWithRepliesResponse.status).toBe(200)
+      expect(commentsWithRepliesResponse.body[0]).toHaveProperty('score')
+      expect(commentsWithRepliesResponse.body[0]).toHaveProperty('voted')
+    })
+
+    it('should not be possible to list the private route comments without a valid token', async () => {
+      const commentsWithRepliesResponse = await request(app)
+        .get('/api/v1/comments/private')
+        .set('Authorization', `Bearer 123`)
+
+      expect(commentsWithRepliesResponse.status).toBe(401)
     })
   })
 
@@ -95,7 +115,6 @@ describe('comment controller', () => {
       expect(createdCommentResponse.status).toBe(201)
       expect(createdCommentResponse.body).toHaveProperty('id')
 
-      // Check if the comment is not a reply (has no parent or replyTo)
       expect(comment?.parentId).toBe(null)
       expect(comment?.replyToId).toBe(null)
     })
@@ -152,7 +171,6 @@ describe('comment controller', () => {
       expect(createdReplyResponse.body).toHaveProperty('id')
       expect(createdReplyResponse.status).toBe(201)
 
-      // Check if the comment is a reply (has parent and replyTo)
       expect(reply?.parentId).toBe(createdCommentResponse.body.id)
       expect(reply?.replyToId).toBe(createdCommentResponse.body.id)
     })
