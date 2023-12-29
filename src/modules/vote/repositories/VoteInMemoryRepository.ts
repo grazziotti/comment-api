@@ -23,6 +23,10 @@ class VoteInMemoryRepository implements IVoteRepository {
     return vote ? vote : null
   }
 
+  async findVotesByUserId(userId: string): Promise<VoteSave[]> {
+    return this.votes.filter((vote) => vote.userId === userId)
+  }
+
   async checkUserVoteForComment(
     commentId: string,
     userId: string,
