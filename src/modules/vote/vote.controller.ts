@@ -95,9 +95,13 @@ class VoteController {
       const prismaVoteRepository = new VotePrismaRepository()
       const voteEditService = new VoteEditService(prismaVoteRepository)
 
-      await voteEditService.execute({ voteId: id, userId: user.id, voteType })
+      const updatedVote = await voteEditService.execute({
+        voteId: id,
+        userId: user.id,
+        voteType,
+      })
 
-      return response.status(200).send()
+      return response.status(200).json(updatedVote)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       return response.status(400).json({ error: error.message })

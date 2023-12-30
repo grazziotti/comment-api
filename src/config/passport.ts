@@ -34,7 +34,7 @@ export const privateRoute = (
 ) => {
   passport.authenticate('jwt', (err: Error, user: UserSave) => {
     if (err || !user) {
-      return response.status(401).json({ message: 'invalid token.' })
+      return response.status(401).json({ message: 'Invalid token.' })
     }
 
     request.user = user

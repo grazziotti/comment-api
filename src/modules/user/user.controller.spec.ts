@@ -176,7 +176,7 @@ describe('user controller', () => {
         .set('Authorization', 'Bearer invalid')
 
       expect(response.status).toBe(401)
-      expect(response.body.message).toEqual('invalid token.')
+      expect(response.body.message).toEqual('Invalid token.')
     })
 
     it('should not be able to get user data without a token', async () => {
@@ -191,7 +191,7 @@ describe('user controller', () => {
       const response = await request(app).get('/api/v1/users')
 
       expect(response.status).toBe(401)
-      expect(response.body.message).toEqual('invalid token.')
+      expect(response.body.message).toEqual('Invalid token.')
     })
   })
   describe('edit user', () => {
@@ -256,7 +256,7 @@ describe('user controller', () => {
         })
 
       expect(response.status).toBe(401)
-      expect(response.body.message).toBe('invalid token.')
+      expect(response.body.message).toBe('Invalid token.')
     })
 
     it('should not be able to edit a user without a token', async () => {
@@ -265,7 +265,7 @@ describe('user controller', () => {
       })
 
       expect(response.status).toBe(401)
-      expect(response.body.message).toBe('invalid token.')
+      expect(response.body.message).toBe('Invalid token.')
     })
   })
   describe('delete user', () => {
@@ -299,7 +299,7 @@ describe('user controller', () => {
       const response = await request(app).delete('/api/v1/users/')
 
       expect(response.status).toBe(401)
-      expect(response.body.message).toBe('invalid token.')
+      expect(response.body.message).toBe('Invalid token.')
     })
 
     it('should not be able to delete a user with an invalid token', async () => {
@@ -308,7 +308,7 @@ describe('user controller', () => {
         .set('Authorization', 'Bearer invalid-token')
 
       expect(response.status).toBe(401)
-      expect(response.body.message).toBe('invalid token.')
+      expect(response.body.message).toBe('Invalid token.')
     })
   })
 })

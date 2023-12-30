@@ -332,7 +332,138 @@ describe('vote controller', () => {
       expect(response.status).toBe(401)
     })
   })
-  describe('edit vote', () => {})
+  describe('edit vote', () => {
+    it('should be able to edit a vote', async () => {
+      const comment = {
+        content: 'Test content',
+        userId: user.id,
+        parentId: null,
+        replyToId: null,
+      }
+
+      const createdCommentResult = await commentRepository.save(comment)
+
+      const vote = {
+        commentId: createdCommentResult.id,
+        userId: user2.id,
+        voteType: 'upVote',
+      }
+
+      const createdVoteResult = await voteRepository.save(vote)
+
+      const response = await request(app)
+        .put(`/api/v1/votes/${createdVoteResult.id}`)
+        .set('Authorization', `Bearer ${user2Token}`)
+        .send({
+          voteType: 'downVote',
+        })
+
+      expect(response.status).toBe(200)
+      expect(response.body.commentId).toBe(createdVoteResult.commentId)
+      expect(response.body.userId).toBe(createdVoteResult.userId)
+      expect(response.body.voteType).toBe('downVote')
+    })
+
+    it('should not be able to edit a nonexistent vote', async () => {
+      const response = await request(app)
+        .put('/api/v1/votes/123')
+        .set('Authorization', `Bearer ${user2Token}`)
+        .send({
+          voteType: 'downVote',
+        })
+
+      expect(response.status).toBe(400)
+      expect(response.body.error).toBe('Vote not found.')
+    })
+
+    it('should not be able to edit a vote from another user', async () => {
+      const comment = {
+        content: 'Test content',
+        userId: user.id,
+        parentId: null,
+        replyToId: null,
+      }
+
+      const createdCommentResult = await commentRepository.save(comment)
+
+      const vote = {
+        commentId: createdCommentResult.id,
+        userId: user2.id,
+        voteType: 'upVote',
+      }
+
+      const createdVoteResult = await voteRepository.save(vote)
+
+      const response = await request(app)
+        .put(`/api/v1/votes/${createdVoteResult.id}`)
+        .set('Authorization', `Bearer ${userToken}`)
+        .send({
+          voteType: 'downVote',
+        })
+
+      expect(response.status).toBe(400)
+      expect(response.body.error).toBe(
+        'User is not authorized to edit this vote.',
+      )
+    })
+
+    it('should not be able to edit a vote with a invalid voteType', async () => {
+      const comment = {
+        content: 'Test content',
+        userId: user.id,
+        parentId: null,
+        replyToId: null,
+      }
+
+      const createdCommentResult = await commentRepository.save(comment)
+
+      const vote = {
+        commentId: createdCommentResult.id,
+        userId: user2.id,
+        voteType: 'upVote',
+      }
+
+      const createdVoteResult = await voteRepository.save(vote)
+
+      const response = await request(app)
+        .put(`/api/v1/votes/${createdVoteResult.id}`)
+        .set('Authorization', `Bearer ${user2Token}`)
+        .send({
+          voteType: 'invalidVote',
+        })
+
+      expect(response.status).toBe(400)
+      expect(response.body.error).toBe('Invalid voteType.')
+    })
+
+    it('should not edit a vote without a valid token', async () => {
+      const comment = {
+        content: 'Test content',
+        userId: user.id,
+        parentId: null,
+        replyToId: null,
+      }
+
+      const createdCommentResult = await commentRepository.save(comment)
+
+      const vote = {
+        commentId: createdCommentResult.id,
+        userId: user2.id,
+        voteType: 'upVote',
+      }
+
+      const createdVoteResult = await voteRepository.save(vote)
+
+      const response = await request(app)
+        .put(`/api/v1/votes/${createdVoteResult.id}`)
+        .send({
+          voteType: 'invalidVote',
+        })
+
+      expect(response.status).toBe(401)
+      expect(response.body.message).toBe('Invalid token.')
+    })
+  })
   describe('delete vote', () => {
     it('should delete a vote for a comment', async () => {
       const comment = {
