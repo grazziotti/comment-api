@@ -41,6 +41,7 @@ describe('edit vote service', () => {
       userId: user.id,
       parentId: null,
       replyToId: null,
+      replyToUserId: null,
     }
 
     const createdCommentResult = await commentInMemoryRepository.save(comment)
@@ -79,6 +80,7 @@ describe('edit vote service', () => {
       userId: user.id,
       parentId: null,
       replyToId: null,
+      replyToUserId: null,
     }
 
     const createdCommentResult = await commentInMemoryRepository.save(comment)
@@ -106,6 +108,7 @@ describe('edit vote service', () => {
       userId: user.id,
       parentId: null,
       replyToId: null,
+      replyToUserId: null,
     }
 
     const createdCommentResult = await commentInMemoryRepository.save(comment)

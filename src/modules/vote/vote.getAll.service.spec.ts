@@ -44,6 +44,7 @@ describe('get all votes service', () => {
       userId: user.id,
       parentId: null,
       replyToId: null,
+      replyToUserId: null,
     }
 
     const comment2 = {
@@ -51,6 +52,7 @@ describe('get all votes service', () => {
       userId: user.id,
       parentId: null,
       replyToId: null,
+      replyToUserId: null,
     }
 
     const createdCommentResult = await commentInMemoryRepository.save(comment)
@@ -89,6 +91,7 @@ describe('get all votes service', () => {
       userId: user.id,
       parentId: null,
       replyToId: null,
+      replyToUserId: null,
     }
 
     const createdCommentResult = await commentInMemoryRepository.save(comment)

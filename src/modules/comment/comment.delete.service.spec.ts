@@ -40,6 +40,7 @@ describe('delete comment service', () => {
       userId: user.id,
       parentId: null,
       replyToId: null,
+      replyToUserId: null,
     }
 
     const createdCommentResult = await commentInMemoryRepository.save(comment)
@@ -68,6 +69,7 @@ describe('delete comment service', () => {
       userId: user.id,
       parentId: null,
       replyToId: null,
+      replyToUserId: null,
     }
 
     const createdCommentResult = await commentInMemoryRepository.save(comment)
@@ -96,6 +98,7 @@ describe('delete comment service', () => {
       userId: user.id,
       parentId: null,
       replyToId: null,
+      replyToUserId: null,
     }
 
     const createdCommentResult = await commentInMemoryRepository.save(comment)

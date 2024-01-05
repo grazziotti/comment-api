@@ -59,6 +59,7 @@ describe('vote controller', () => {
         userId: user.id,
         parentId: null,
         replyToId: null,
+        replyToUserId: null,
       }
 
       const createdCommentResult = await commentRepository.save(comment)
@@ -96,6 +97,7 @@ describe('vote controller', () => {
         userId: user.id,
         parentId: null,
         replyToId: null,
+        replyToUserId: null,
       }
 
       const createdCommentResult = await commentRepository.save(comment)
@@ -132,6 +134,7 @@ describe('vote controller', () => {
         userId: user.id,
         parentId: null,
         replyToId: null,
+        replyToUserId: null,
       }
 
       const createdCommentResult = await commentRepository.save(comment)
@@ -166,6 +169,7 @@ describe('vote controller', () => {
         userId: user.id,
         parentId: null,
         replyToId: null,
+        replyToUserId: null,
       }
 
       const createdCommentResult = await commentRepository.save(comment)
@@ -189,6 +193,7 @@ describe('vote controller', () => {
         userId: user.id,
         parentId: null,
         replyToId: null,
+        replyToUserId: null,
       }
 
       const createdCommentResult = await commentRepository.save(comment)
@@ -225,6 +230,7 @@ describe('vote controller', () => {
         userId: user.id,
         parentId: null,
         replyToId: null,
+        replyToUserId: null,
       }
 
       const createdCommentResult = await commentRepository.save(comment)
@@ -247,6 +253,7 @@ describe('vote controller', () => {
         userId: user.id,
         parentId: null,
         replyToId: null,
+        replyToUserId: null,
       }
 
       const createdCommentResult = await commentRepository.save(comment)
@@ -269,6 +276,7 @@ describe('vote controller', () => {
         userId: user.id,
         parentId: null,
         replyToId: null,
+        replyToUserId: null,
       }
 
       const createdCommentResult = await commentRepository.save(comment)
@@ -299,6 +307,7 @@ describe('vote controller', () => {
         userId: user.id,
         parentId: null,
         replyToId: null,
+        replyToUserId: null,
       }
 
       const createdCommentResult = await commentRepository.save(comment)
@@ -317,6 +326,7 @@ describe('vote controller', () => {
         userId: user.id,
         parentId: null,
         replyToId: null,
+        replyToUserId: null,
       }
 
       const createdCommentResult = await commentRepository.save(comment)
@@ -339,6 +349,7 @@ describe('vote controller', () => {
         userId: user.id,
         parentId: null,
         replyToId: null,
+        replyToUserId: null,
       }
 
       const createdCommentResult = await commentRepository.save(comment)
@@ -382,6 +393,7 @@ describe('vote controller', () => {
         userId: user.id,
         parentId: null,
         replyToId: null,
+        replyToUserId: null,
       }
 
       const createdCommentResult = await commentRepository.save(comment)
@@ -413,6 +425,7 @@ describe('vote controller', () => {
         userId: user.id,
         parentId: null,
         replyToId: null,
+        replyToUserId: null,
       }
 
       const createdCommentResult = await commentRepository.save(comment)
@@ -442,6 +455,7 @@ describe('vote controller', () => {
         userId: user.id,
         parentId: null,
         replyToId: null,
+        replyToUserId: null,
       }
 
       const createdCommentResult = await commentRepository.save(comment)
@@ -471,6 +485,7 @@ describe('vote controller', () => {
         userId: user.id,
         parentId: null,
         replyToId: null,
+        replyToUserId: null,
       }
 
       const createdCommentResult = await commentRepository.save(comment)
@@ -498,6 +513,7 @@ describe('vote controller', () => {
         userId: user.id,
         parentId: null,
         replyToId: null,
+        replyToUserId: null,
       }
 
       const createdCommentResult = await commentRepository.save(comment)
@@ -533,6 +549,7 @@ describe('vote controller', () => {
         userId: user.id,
         parentId: null,
         replyToId: null,
+        replyToUserId: null,
       }
 
       const createdCommentResult = await commentRepository.save(comment)
@@ -557,6 +574,7 @@ describe('vote controller', () => {
         userId: user.id,
         parentId: null,
         replyToId: null,
+        replyToUserId: null,
       }
 
       const createdCommentResult = await commentRepository.save(comment)

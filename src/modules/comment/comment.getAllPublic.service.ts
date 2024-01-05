@@ -66,20 +66,12 @@ class CommentGetAllPublicService {
                 throw new Error('User not found.')
               }
 
-              if (reply.replyToId === null) {
-                throw new Error('Invalid reply.')
-              }
-
-              const commentToReply = await this.commentRepository.findById(
-                reply.replyToId,
-              )
-
-              if (!commentToReply) {
-                throw new Error('Comment not found.')
+              if (!reply.replyToUserId) {
+                throw new Error('User to reply not found.')
               }
 
               const userToReply = await this.userRepository.findById(
-                commentToReply.userId,
+                reply.replyToUserId,
               )
 
               if (!userToReply) {

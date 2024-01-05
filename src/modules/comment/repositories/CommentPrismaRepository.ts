@@ -7,7 +7,7 @@ import {
 
 class CommentPrismaRepository implements ICommentRepository {
   async save(data: CommentCreate) {
-    const { content, userId, parentId, replyToId } = data
+    const { content, userId, parentId, replyToId, replyToUserId } = data
 
     const createdComment = await prismaClient.comment.create({
       data: {
@@ -15,6 +15,7 @@ class CommentPrismaRepository implements ICommentRepository {
         content,
         parentId,
         replyToId,
+        replyToUserId,
       },
     })
 

@@ -44,6 +44,7 @@ describe('get vote service', () => {
       userId: user.id,
       parentId: null,
       replyToId: null,
+      replyToUserId: null,
     }
 
     const createdCommentResult = await commentInMemoryRepository.save(comment)
@@ -70,6 +71,7 @@ describe('get vote service', () => {
       userId: user.id,
       parentId: null,
       replyToId: null,
+      replyToUserId: null,
     }
 
     const createdCommentResult = await commentInMemoryRepository.save(comment)
@@ -97,6 +99,7 @@ describe('get vote service', () => {
       userId: user.id,
       parentId: null,
       replyToId: null,
+      replyToUserId: null,
     }
 
     const createdCommentResult = await commentInMemoryRepository.save(comment)
