@@ -17,6 +17,8 @@ model User {
   comments Comment[]
   votes Vote[]
   createdAt DateTime @default(now())
+
+  repliedComments Comment[] @relation("replyToUser")
   
   @@map("users")
 }
@@ -30,6 +32,8 @@ model Comment {
     parentId String?
     replyTo Comment? @relation(fields: [replyToId], references: [id], name: "ReplyToComments")
     replyToId String?
+    replyToUser User? @relation(fields: [replyToUserId], references: [id], name: "replyToUser")
+    replyToUserId String?
     votes Vote[]
     createdAt DateTime @default(now())
     updatedAt DateTime?

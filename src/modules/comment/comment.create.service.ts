@@ -33,6 +33,7 @@ class CommentCreateService {
           userId,
           content,
           replyToId: commentToReply.id,
+          replyToUserId: commentToReply.userId,
           parentId: commentToReply.parentId,
         })
 
@@ -48,6 +49,7 @@ class CommentCreateService {
         userId,
         content,
         replyToId: commentToReply.id,
+        replyToUserId: commentToReply.userId,
         parentId: commentToReply.id,
       })
 
@@ -62,6 +64,7 @@ class CommentCreateService {
     const createdComment = await this.commentRepository.save({
       userId,
       content,
+      replyToUserId: null,
       replyToId: null,
       parentId: null,
     })

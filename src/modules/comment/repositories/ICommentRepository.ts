@@ -3,6 +3,7 @@ export type CommentCreate = {
   userId: string
   parentId: string | null
   replyToId: string | null
+  replyToUserId: string | null
 }
 
 export type CommentEdit = {
@@ -16,6 +17,7 @@ export type CommentSave = {
   userId: string
   parentId: string | null
   replyToId: string | null
+  replyToUserId: string | null
   createdAt: Date
   updatedAt: Date | null
 }

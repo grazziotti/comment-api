@@ -42,6 +42,7 @@ describe('create comment service', () => {
     const comment = {
       content: 'Test content',
       userId: user.id,
+      replyToUserId: null,
       parentId: null,
       replyToId: null,
     }
@@ -53,6 +54,7 @@ describe('create comment service', () => {
       userId: user2.id,
       parentId: commentResult.id,
       replyToId: commentResult.id,
+      replyToUserId: user.id,
     }
 
     await commentInMemoryRepository.save(reply)
