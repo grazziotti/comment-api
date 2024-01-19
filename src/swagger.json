@@ -1,0 +1,1362 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Comment API",
+    "description": "This project is a REST API for managing comments in an application",
+    "contact": {
+      "email": "danielgrazziotti99@gmail.com"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:4000/api/v1",
+      "description": "test API"
+    }
+  ],
+  "paths": {
+    "/sessions": {
+      "post": {
+        "tags": ["Session"],
+        "description": "User login authentication",
+        "requestBody": {
+          "description": "Requested fields to login in account",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestSession"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User successfully authenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseSession"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid credentials | Username cannot be empty | Password must be provided",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    { "$ref": "#/components/schemas/ErrorMessage" },
+                    { "$ref": "#/components/schemas/ValidationError" }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users": {
+      "post": {
+        "tags": ["User"],
+        "description": "User registration",
+        "requestBody": {
+          "description": "Requested fields to register a user",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestPostUser"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User successfully registered",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponsePostUser"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Username already in use | Username must have at least 2 characters | Username must have at most 30 characters | Username must be in lowercase | Username must not contain spaces | Username must contain at least one letter | Username must contain only letters, numbers, hyphens, and underscores | Password must be at least 8 characters long, one uppercase letter, one lowercase letter, one number, and one special character",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    { "$ref": "#/components/schemas/ErrorMessage" },
+                    { "$ref": "#/components/schemas/ValidationError" }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["User"],
+        "description": "Show logged in user details",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Details of the logged-in user successfully retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseGetUser"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Access token is required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["User"],
+        "description": "Update logged user",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Requested fields to update a user",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestPutUser"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User successfully updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponsePutUser"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid token.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "User not found | Was not possible to update user | Password must be at least 8 characters long, one uppercase letter, one lowercase letter, one number, and one special character",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    { "$ref": "#/components/schemas/ErrorMessage" },
+                    { "$ref": "#/components/schemas/ValidationError" }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["User"],
+        "description": "Delete logged user",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "User successfully deleted",
+            "content": {
+              "text": {
+                "example": "No content"
+              }
+            }
+          },
+          "401": {
+            "description": "Access token is required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/comments": {
+      "post": {
+        "tags": ["Comment"],
+        "description": "Create comment for logged user",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Requested fields to create a comment",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestPostComment"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Comment successfully created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponsePostComment"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Access token is required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    { "$ref": "#/components/schemas/ErrorMessage" },
+                    { "$ref": "#/components/schemas/ValidationError" }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/comments/public": {
+      "get": {
+        "tags": ["Comment"],
+        "description": "Get all public comments",
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved all public comments",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ResponseGetPublicComment"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "User not found | User to reply not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorMessage" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/comments/private": {
+      "get": {
+        "tags": ["Comment"],
+        "description": "Get all private comments",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved all private private comments",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ResponseGetPrivateComment"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "User not found | User to reply not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorMessage" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/comments/reply": {
+      "post": {
+        "tags": ["Comment"],
+        "description": "Create comment reply for logged user",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "description": "Requested fields to create a comment reply",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestPostCommentReply"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Comment reply successfully created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponsePostCommentReply"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Access token is required",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorMessage" }
+              }
+            }
+          },
+          "400": {
+            "description": "User not found | Comment to reply not found | User cannot reply to themselves",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    { "$ref": "#/components/schemas/ErrorMessage" },
+                    { "$ref": "#/components/schemas/ValidationError" }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/comments/{commentId}": {
+      "get": {
+        "tags": ["Comment"],
+        "description": "Show details of a specific comment",
+        "parameters": [
+          {
+            "name": "commentId",
+            "in": "path",
+            "description": "Show comment by id",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved comment details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseGetComment"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Access token is required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Comment not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Comment"],
+        "description": "Update comment of logged user",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "commentId",
+            "in": "path",
+            "description": "Select comment by id to be updated",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Requested fields to update a comment",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestPutComment"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Comment successfully updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponsePutComment"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Access token is required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "User not found | Comment not found | User is not authorized to edit this comment",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    { "$ref": "#/components/schemas/ErrorMessage" },
+                    { "$ref": "#/components/schemas/ValidationError" }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Comment"],
+        "description": "Create vote for logged user",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "commentId",
+            "in": "path",
+            "description": "Select comment by id to be deleted",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Comment successfully deleted",
+            "content": {
+              "text": {
+                "example": "No content"
+              }
+            }
+          },
+          "401": {
+            "description": "Access token is required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "User not found | Comment not found | User is not authorized to delete this comment",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/votes": {
+      "post": {
+        "tags": ["Vote"],
+        "description": "Create vote on a comment as a logged-in user.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Requested fields to create a vote",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestPostVote"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Vote successfully created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponsePostVote"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Access token is required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "User not found | User cannot vote their own comment | User has already voted this comment | Invalid voteType | Comment or reply not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    { "$ref": "#/components/schemas/ErrorMessage" },
+                    { "$ref": "#/components/schemas/ValidationError" }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["Vote"],
+        "description": "Get all votes of logged user",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved vote details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ResponsePostVote"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Access token is required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorMessage" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/votes/{voteId}": {
+      "get": {
+        "tags": ["Vote"],
+        "description": "Show details of a specific vote created by the logged-in user",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "voteId",
+            "in": "path",
+            "description": "Show vote by id",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved vote details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponsePostVote"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Access token is required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "User not found | Vote not found | User is not authorized to get this vote",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorMessage" }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Vote"],
+        "description": "Update a vote of logged user",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "voteId",
+            "in": "path",
+            "description": "Select vote by id to be updated",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Requested fields to update a task",
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/RequestPutVote" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Vote successfully updated",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ResponsePostVote" }
+              }
+            }
+          },
+          "401": {
+            "description": "Access token is required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "User not found | Vote not found | User is not authorized to edit this vote | Invalid voteType",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    { "$ref": "#/components/schemas/ErrorMessage" },
+                    { "$ref": "#/components/schemas/ValidationError" }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Vote"],
+        "description": "Delete a vote of logged user",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "voteId",
+            "in": "path",
+            "description": "Select vote by id to be deleted",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Vote successfully deleted",
+            "content": {
+              "text": {
+                "example": "No content"
+              }
+            }
+          },
+          "401": {
+            "description": "Access token is required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "User not found | Vote not found | User is not authorized to delete this vote",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorMessage"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "RequestSession": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "minLength": 2,
+            "example": "test_username"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8,
+            "example": "testPassword1234@"
+          }
+        }
+      },
+      "ResponseSession": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "User access token"
+          },
+          "user": {
+            "type": "object",
+            "properties": {
+              "id:": {
+                "type": "string",
+                "description": "User id"
+              },
+              "username:": {
+                "type": "string",
+                "description": "User username"
+              }
+            }
+          }
+        }
+      },
+      "RequestPostUser": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "minLength": 2,
+            "example": "test_username"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8,
+            "example": "testPassword1234@"
+          }
+        }
+      },
+      "ResponsePostUser": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "User id"
+          },
+          "username": {
+            "type": "string",
+            "description": "User username"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "User createdAt"
+          },
+          "deletedAt": {
+            "type": "string",
+            "description": "User deletedAt"
+          }
+        }
+      },
+      "RequestPutUser": {
+        "type": "object",
+        "properties": {
+          "password": {
+            "type": "string",
+            "minLength": 8,
+            "example": "newTestPassword1234@"
+          }
+        }
+      },
+      "ResponsePutUser": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "User id"
+          },
+          "username": {
+            "type": "string",
+            "description": "User username"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "User createdAt"
+          },
+          "deletedAt": {
+            "type": "string",
+            "description": "User deletedAt"
+          }
+        }
+      },
+      "ResponseGetUser": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "User id"
+          },
+          "username": {
+            "type": "string",
+            "description": "User username"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "User createdAt"
+          },
+          "deletedAt": {
+            "type": "string",
+            "description": "User deletedAt"
+          }
+        }
+      },
+      "RequestPostComment": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "minLength": 1,
+            "example": "New comment"
+          }
+        }
+      },
+      "ResponsePostComment": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Comment id"
+          },
+          "content": {
+            "type": "string",
+            "description": "Comment content"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Comment createdAt"
+          }
+        }
+      },
+      "ResponseGetPublicComment": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Comment id"
+          },
+          "content": {
+            "type": "string",
+            "description": "Comment content"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Comment createdAt"
+          },
+          "updatedAt": {
+            "oneOf": [{ "type": "null" }, { "type": "string" }],
+            "description": "Comment updatedAt"
+          },
+          "score": {
+            "type": "integer",
+            "description": "Comment score"
+          },
+          "user": {
+            "type": "object",
+            "description": "Information about the user who posted the comment",
+            "properties": {
+              "username": {
+                "type": "string",
+                "description": "Username of the user who posted the comment"
+              }
+            }
+          },
+          "replies": {
+            "type": "array",
+            "description": "Comment replies",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Comment id"
+                },
+                "content": {
+                  "type": "string",
+                  "description": "Comment content"
+                },
+                "createdAt": {
+                  "type": "string",
+                  "description": "Comment createdAt"
+                },
+                "updatedAt": {
+                  "oneOf": [{ "type": "null" }, { "type": "string" }],
+                  "description": "Comment updatedAt"
+                },
+                "score": {
+                  "type": "integer",
+                  "description": "Comment score"
+                },
+                "user": {
+                  "type": "object",
+                  "description": "Information about the user who posted the comment",
+                  "properties": {
+                    "username": {
+                      "type": "string",
+                      "description": "Username of the user who posted the comment"
+                    }
+                  }
+                },
+                "replyTo": {
+                  "type": "object",
+                  "description": "Details about the user to whom this response is directed",
+                  "properties": {
+                    "user": {
+                      "type": "object",
+                      "description": "Information about the user who posted the comment",
+                      "properties": {
+                        "username": {
+                          "type": "string",
+                          "description": "Username of the user who posted the comment"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "ResponseGetPrivateComment": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Comment id"
+          },
+          "content": {
+            "type": "string",
+            "description": "Comment content"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Comment createdAt"
+          },
+          "updatedAt": {
+            "oneOf": [{ "type": "null" }, { "type": "string" }],
+            "description": "Comment updatedAt"
+          },
+          "score": {
+            "type": "integer",
+            "description": "Comment score"
+          },
+          "voted": {
+            "oneOf": [{ "type": "null" }, { "type": "string" }],
+            "description": "Comment voted"
+          },
+          "user": {
+            "type": "object",
+            "description": "Information about the user who posted the comment",
+            "properties": {
+              "username": {
+                "type": "string",
+                "description": "Username of the user who posted the comment"
+              }
+            }
+          },
+          "replies": {
+            "type": "array",
+            "description": "Comment replies",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Comment id"
+                },
+                "content": {
+                  "type": "string",
+                  "description": "Comment content"
+                },
+                "createdAt": {
+                  "type": "string",
+                  "description": "Comment createdAt"
+                },
+                "updatedAt": {
+                  "oneOf": [{ "type": "null" }, { "type": "string" }],
+                  "description": "Comment updatedAt"
+                },
+                "score": {
+                  "type": "integer",
+                  "description": "Comment score"
+                },
+                "voted": {
+                  "oneOf": [{ "type": "null" }, { "type": "string" }],
+                  "description": "Comment voted"
+                },
+                "user": {
+                  "type": "object",
+                  "description": "Information about the user who posted the comment",
+                  "properties": {
+                    "username": {
+                      "type": "string",
+                      "description": "Username of the user who posted the comment"
+                    }
+                  }
+                },
+                "replyTo": {
+                  "type": "object",
+                  "description": "Details about the user to whom this response is directed",
+                  "properties": {
+                    "user": {
+                      "type": "object",
+                      "description": "Information about the user who posted the comment",
+                      "properties": {
+                        "username": {
+                          "type": "string",
+                          "description": "Username of the user who posted the comment"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "ResponseGetComment": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Comment id"
+          },
+          "content": {
+            "type": "string",
+            "description": "Comment content"
+          },
+          "userId": {
+            "type": "string",
+            "description": "User id"
+          },
+          "parentId": {
+            "oneOf": [{ "type": "null" }, { "type": "string" }],
+            "description": "Parent comment id"
+          },
+          "replyToId": {
+            "oneOf": [{ "type": "null" }, { "type": "string" }],
+            "description": "Which user id is this comment reply responding to"
+          },
+          "replyToUserId": {
+            "oneOf": [{ "type": "null" }, { "type": "string" }],
+            "description": "Which comment id is this comment reply responding to"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Comment createdAt"
+          },
+          "updatedAt": {
+            "oneOf": [{ "type": "null" }, { "type": "string" }],
+            "description": "Comment updatedAt"
+          }
+        }
+      },
+      "RequestPutComment": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "minLength": 1,
+            "example": "Updated comment"
+          }
+        }
+      },
+      "ResponsePutComment": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Comment id"
+          },
+          "content": {
+            "type": "string",
+            "description": "Comment content"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Comment createdAt"
+          },
+          "updatedAt": {
+            "oneOf": [{ "type": "null" }, { "type": "string" }],
+            "description": "Comment updatedAt"
+          }
+        }
+      },
+      "RequestPostCommentReply": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "minLength": 1,
+            "example": "New comment reply"
+          },
+          "replyToId": {
+            "type": "string",
+            "minLength": 1,
+            "example": "1d1d1d1d-1d1d-1d1d-1d1d-1d1d1d1d1d1d"
+          }
+        }
+      },
+      "ResponsePostCommentReply": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Comment id"
+          },
+          "content": {
+            "type": "string",
+            "description": "Comment content"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Comment createdAt"
+          },
+          "reply": {
+            "type": "boolean",
+            "description": "this is a comment reply"
+          }
+        }
+      },
+      "RequestPostVote": {
+        "type": "object",
+        "properties": {
+          "commentId": {
+            "type": "string",
+            "minLength": 1,
+            "example": "1d1d1d1d-1d1d-1d1d-1d1d-1d1d1d1d1d1d"
+          },
+          "voteType": {
+            "type": "string",
+            "minLength": 1,
+            "example": "upVote"
+          }
+        }
+      },
+      "ResponsePostVote": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Vote id"
+          },
+          "userId": {
+            "type": "string",
+            "description": "User id"
+          },
+          "commentId": {
+            "type": "string",
+            "description": "Comment id"
+          },
+          "voteType": {
+            "type": "string",
+            "description": "Vote type"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Vote createdAt"
+          }
+        }
+      },
+      "RequestPutVote": {
+        "type": "object",
+        "properties": {
+          "voteType": {
+            "type": "string",
+            "minLength": 1,
+            "example": "upVote"
+          }
+        }
+      },
+      "ErrorMessage": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Error message",
+            "example": "Error message"
+          }
+        }
+      },
+      "ValidationError": {
+        "type": "object",
+        "properties": {
+          "errors": {
+            "type": "array",
+            "description": "Validation error",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "field"
+                },
+                "value": {
+                  "type": "string",
+                  "example": "invalid value"
+                },
+                "msg": {
+                  "type": "string",
+                  "example": "Error message"
+                },
+                "path": {
+                  "type": "string",
+                  "example": "path name"
+                },
+                "location": {
+                  "type": "string",
+                  "example": "body"
+                }
+              }
+            },
+            "example": [
+              {
+                "type": "field",
+                "value": "Invalid value",
+                "msg": "Error message",
+                "path": "path name",
+                "location": "body"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "description": "JWT authentication",
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
