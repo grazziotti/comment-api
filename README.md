@@ -11,6 +11,7 @@ Este projeto é uma API REST para gerenciar comentários em uma aplicação. Os 
 - Autenticação: Json Web Token
 - Validação: express-validator
 - Testes: Jest + Supertest
+- Documentação: Swagger
 
 ## Instalação e uso
 
@@ -19,6 +20,7 @@ Este projeto é uma API REST para gerenciar comentários em uma aplicação. Os 
 3. Instale as dependências: yarn
 4. Execute o projeto: yarn dev
 5. Para executar os testes: yarn test
+6. Para testar os endpoints, acesse a documentação em /api-docs e consulte as instruções fornecidas para realizar os testes e interagir com a API
 
 ## Contato:
 
