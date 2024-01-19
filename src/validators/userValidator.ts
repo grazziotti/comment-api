@@ -25,3 +25,12 @@ export const createUserValidation = [
       'Password must be at least 8 characters long, one uppercase letter, one lowercase letter, one number, and one special character',
     ),
 ]
+
+export const editUserValidation = [
+  body('password')
+    .isLength({ min: 8 })
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])/)
+    .withMessage(
+      'Password must be at least 8 characters long, one uppercase letter, one lowercase letter, one number, and one special character',
+    ),
+]

@@ -17,6 +17,7 @@ model User {
   comments Comment[]
   votes Vote[]
   createdAt DateTime @default(now())
+  deletedAt DateTime? 
 
   repliedComments Comment[] @relation("replyToUser")
   

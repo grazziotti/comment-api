@@ -12,8 +12,11 @@ let user2: UserSave
 
 beforeEach(async () => {
   commentInMemoryRepository = new CommentInMemoryRepository()
-  commentEditService = new CommentEditService(commentInMemoryRepository)
   userInMemoryRepository = new UserInMemoryRepository()
+  commentEditService = new CommentEditService(
+    commentInMemoryRepository,
+    userInMemoryRepository,
+  )
 
   const password = 'TestPassword1234$'
 
@@ -83,6 +86,37 @@ describe('edit comment service', () => {
 
     await expect(commentEditService.execute(editedComment)).rejects.toEqual(
       new Error('User is not authorized to edit this comment.'),
+    )
+  })
+  it('should not be able to edit a comment from an inactive user', async () => {
+    const password = 'TestPassword1234$'
+    const passwordHash = await hash(password, 8)
+
+    const user = await userInMemoryRepository.save({
+      username: 'user3_test',
+      password: passwordHash,
+    })
+
+    const comment = {
+      content: 'Test content',
+      userId: user.id,
+      parentId: null,
+      replyToId: null,
+      replyToUserId: null,
+    }
+
+    const createdCommentResult = await commentInMemoryRepository.save(comment)
+
+    const editedComment = {
+      id: createdCommentResult.id,
+      newContent: 'Test content edited',
+      userId: user.id,
+    }
+
+    await userInMemoryRepository.delete(user.id)
+
+    await expect(commentEditService.execute(editedComment)).rejects.toEqual(
+      new Error('User not found.'),
     )
   })
 })

@@ -5,9 +5,11 @@ import { CommentGetAllPublicService } from './comment.getAllPublic.service'
 import { CommentCreateService } from './comment.create.service'
 import { CommentEditService } from './comment.edit.service'
 import { CommentDeleteService } from './comment.delete.service'
+
 import { UserPrismaRepository } from '../user/repositories/UserPrismaRepository'
 import { VotePrismaRepository } from '../vote/repositories/VotePrismaRepository'
 import { CommentGetAllPrivateService } from './comment.getAllPrivate.service'
+import { CommentGetService } from './comment.get.service'
 
 class CommentController {
   async getAllPrivate(request: Request, response: Response): Promise<Response> {
@@ -43,6 +45,23 @@ class CommentController {
 
     return response.json(commentsWithRepliesAndVotes)
   }
+  async get(request: Request, response: Response): Promise<Response> {
+    try {
+      const prismaCommentRepository = new CommentPrismaRepository()
+      const commentGetAllService = new CommentGetService(
+        prismaCommentRepository,
+      )
+
+      const { id } = request.params
+
+      const commentsWithRepliesAndLikes = await commentGetAllService.execute(id)
+
+      return response.json(commentsWithRepliesAndLikes)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      return response.status(400).json({ error: error.message })
+    }
+  }
   async create(request: Request, response: Response): Promise<Response> {
     try {
       const user = request.user as UserSave
@@ -50,8 +69,10 @@ class CommentController {
       const { content, replyToId } = request.body
 
       const prismaCommentRepository = new CommentPrismaRepository()
+      const prismaUserRepository = new UserPrismaRepository()
       const commentCreateService = new CommentCreateService(
         prismaCommentRepository,
+        prismaUserRepository,
       )
 
       const createdComment = await commentCreateService.execute({
@@ -74,7 +95,11 @@ class CommentController {
       const { content } = request.body
 
       const prismaCommentRepository = new CommentPrismaRepository()
-      const commentEditService = new CommentEditService(prismaCommentRepository)
+      const prismaUserRepository = new UserPrismaRepository()
+      const commentEditService = new CommentEditService(
+        prismaCommentRepository,
+        prismaUserRepository,
+      )
 
       const updatedComment = await commentEditService.execute({
         newContent: content,
@@ -95,8 +120,10 @@ class CommentController {
       const { id } = request.params
 
       const prismaCommentRepository = new CommentPrismaRepository()
+      const prismaUserRepository = new UserPrismaRepository()
       const commentDeleteService = new CommentDeleteService(
         prismaCommentRepository,
+        prismaUserRepository,
       )
 
       await commentDeleteService.execute({ id, userId: user.id })

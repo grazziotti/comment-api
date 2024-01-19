@@ -3,10 +3,10 @@ import { CommentInMemoryRepository } from '../comment/repositories/CommentInMemo
 import { UserSave } from '../user/repositories/IUserRepository'
 import { UserInMemoryRepository } from '../user/repositories/UserInMemoryRepository'
 import { VoteInMemoryRepository } from './repositories/VoteInMemoryRepository'
-import { VoteDeleteService } from './vote.delete.service'
+import { VoteGetService } from './vote.get.service'
 
 let voteInMemoryRepository: VoteInMemoryRepository
-let voteDeleteService: VoteDeleteService
+let voteGetService: VoteGetService
 
 let commentInMemoryRepository: CommentInMemoryRepository
 let userInMemoryRepository: UserInMemoryRepository
@@ -17,7 +17,7 @@ beforeEach(async () => {
   voteInMemoryRepository = new VoteInMemoryRepository()
   commentInMemoryRepository = new CommentInMemoryRepository()
   userInMemoryRepository = new UserInMemoryRepository()
-  voteDeleteService = new VoteDeleteService(
+  voteGetService = new VoteGetService(
     voteInMemoryRepository,
     userInMemoryRepository,
   )
@@ -37,8 +37,8 @@ beforeEach(async () => {
   })
 })
 
-describe('delete vote service', () => {
-  it('should delete an existing vote', async () => {
+describe('get vote service', () => {
+  it('should return vote', async () => {
     const comment = {
       content: 'Test content',
       userId: user.id,
@@ -49,34 +49,51 @@ describe('delete vote service', () => {
 
     const createdCommentResult = await commentInMemoryRepository.save(comment)
 
-    const vote = {
+    const createdVoteResult = await voteInMemoryRepository.save({
       commentId: createdCommentResult.id,
       userId: user2.id,
       voteType: 'upVote',
-    }
-
-    const createdVoteResult = await voteInMemoryRepository.save(vote)
-
-    await voteDeleteService.execute({
-      userId: user2.id,
-      voteId: createdVoteResult.id,
     })
 
-    const result = await voteInMemoryRepository.findById(createdVoteResult.id)
+    const result = await voteGetService.execute({
+      id: createdVoteResult.id,
+      userId: user2.id,
+    })
 
-    expect(result).toBe(null)
+    expect(result.userId).toBe(user2.id)
+    expect(result.commentId).toBe(createdCommentResult.id)
+    expect(result.voteType).toBe('upVote')
   })
 
-  it('should throw an error when trying to delete a non-existent vote', async () => {
+  it('should not retrieve vote when provided with an invalid userId', async () => {
+    const comment = {
+      content: 'Test content',
+      userId: user.id,
+      parentId: null,
+      replyToId: null,
+      replyToUserId: null,
+    }
+
+    const createdCommentResult = await commentInMemoryRepository.save(comment)
+
+    const createdVoteResult = await voteInMemoryRepository.save({
+      commentId: createdCommentResult.id,
+      userId: user2.id,
+      voteType: 'upVote',
+    })
+
     await expect(
-      voteDeleteService.execute({
-        userId: user.id,
-        voteId: '123',
-      }),
+      voteGetService.execute({ id: createdVoteResult.id, userId: '123' }),
+    ).rejects.toEqual(new Error('User not found.'))
+  })
+
+  it('should not retrieve vote when provided with an invalid voteId', async () => {
+    await expect(
+      voteGetService.execute({ id: '123', userId: user2.id }),
     ).rejects.toEqual(new Error('Vote not found.'))
   })
 
-  it('should throw an error when trying to delete a vote without correct credentials', async () => {
+  it('should not retrieve vote from another user', async () => {
     const comment = {
       content: 'Test content',
       userId: user.id,
@@ -87,55 +104,17 @@ describe('delete vote service', () => {
 
     const createdCommentResult = await commentInMemoryRepository.save(comment)
 
-    const vote = {
+    const createdVoteResult = await voteInMemoryRepository.save({
       commentId: createdCommentResult.id,
       userId: user2.id,
       voteType: 'upVote',
-    }
-
-    const createdVoteResult = await voteInMemoryRepository.save(vote)
-
-    await expect(
-      voteDeleteService.execute({
-        userId: user.id,
-        voteId: createdVoteResult.id,
-      }),
-    ).rejects.toEqual(new Error('User is not authorized to delete this vote.'))
-  })
-  it('should not be able to delete a vote from an inactive user', async () => {
-    const password = 'TestPassword1234$'
-    const passwordHash = await hash(password, 8)
-
-    const user = await userInMemoryRepository.save({
-      username: 'user3_test',
-      password: passwordHash,
     })
 
-    const comment = {
-      content: 'Test content',
-      userId: user.id,
-      parentId: null,
-      replyToId: null,
-      replyToUserId: null,
-    }
-
-    const createdCommentResult = await commentInMemoryRepository.save(comment)
-
-    const vote = {
-      commentId: createdCommentResult.id,
-      userId: user2.id,
-      voteType: 'upVote',
-    }
-
-    const createdVoteResult = await voteInMemoryRepository.save(vote)
-
-    await userInMemoryRepository.delete(user.id)
-
     await expect(
-      voteDeleteService.execute({
+      voteGetService.execute({
+        id: createdVoteResult.id,
         userId: user.id,
-        voteId: createdVoteResult.id,
       }),
-    ).rejects.toEqual(new Error('User not found.'))
+    ).rejects.toEqual(new Error('User is not authorized to get this vote.'))
   })
 })

@@ -10,6 +10,7 @@
     "skipLibCheck": true /* Skip type checking all .d.ts files. */,
     "baseUrl": "src",
     "esModuleInterop": true,
+    "resolveJsonModule": true,
     "paths": {
       "@/*": ["*"]
     }

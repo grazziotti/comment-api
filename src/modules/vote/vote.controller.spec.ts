@@ -52,6 +52,116 @@ beforeAll(async () => {
 })
 
 describe('vote controller', () => {
+  describe('get votes', () => {
+    it('should return all votes for a specific user', async () => {
+      const comment = {
+        content: 'Test content',
+        userId: user.id,
+        parentId: null,
+        replyToId: null,
+        replyToUserId: null,
+      }
+
+      const createdCommentResult = await commentRepository.save(comment)
+
+      const vote = {
+        commentId: createdCommentResult.id,
+        userId: user2.id,
+        voteType: 'upVote',
+      }
+
+      const createdVoteResult = await voteRepository.save(vote)
+
+      const response = await request(app)
+        .get('/api/v1/votes')
+        .set('Authorization', `Bearer ${user2Token}`)
+
+      expect(response.status).toBe(200)
+      expect(response.body[0].commentId).toBe(createdVoteResult.commentId)
+      expect(response.body[0].userId).toBe(createdVoteResult.userId)
+      expect(response.body[0].voteType).toBe(createdVoteResult.voteType)
+    })
+
+    it('should not get votes without a valid token', async () => {
+      const response = await request(app)
+        .get('/api/v1/votes')
+        .set('Authorization', 'Bearer 123')
+
+      expect(response.status).toBe(401)
+    })
+  })
+  describe('get vote', () => {
+    it('should get a vote', async () => {
+      const comment = {
+        content: 'Test content',
+        userId: user.id,
+        parentId: null,
+        replyToId: null,
+        replyToUserId: null,
+      }
+
+      const createdCommentResult = await commentRepository.save(comment)
+
+      const vote = {
+        commentId: createdCommentResult.id,
+        userId: user2.id,
+        voteType: 'upVote',
+      }
+
+      const createdVoteResult = await voteRepository.save(vote)
+
+      const response = await request(app)
+        .get(`/api/v1/votes/${createdVoteResult.id}`)
+        .set('Authorization', `Bearer ${user2Token}`)
+
+      expect(response.status).toBe(200)
+      expect(response.body.commentId).toBe(createdVoteResult.commentId)
+      expect(response.body.userId).toBe(createdVoteResult.userId)
+      expect(response.body.voteType).toBe(createdVoteResult.voteType)
+    })
+
+    it('should not retrieve vote when provided with an invalid voteId', async () => {
+      const response = await request(app)
+        .get('/api/v1/votes/123')
+        .set('Authorization', `Bearer ${user2Token}`)
+
+      expect(response.status).toBe(400)
+    })
+
+    it('should not retrieve vote from another user', async () => {
+      const comment = {
+        content: 'Test content',
+        userId: user.id,
+        parentId: null,
+        replyToId: null,
+        replyToUserId: null,
+      }
+
+      const createdCommentResult = await commentRepository.save(comment)
+
+      const vote = {
+        commentId: createdCommentResult.id,
+        userId: user2.id,
+        voteType: 'upVote',
+      }
+
+      const createdVoteResult = await voteRepository.save(vote)
+
+      const response = await request(app)
+        .get(`/api/v1/votes/${createdVoteResult.id}`)
+        .set('Authorization', `Bearer ${userToken}`)
+
+      expect(response.status).toBe(400)
+    })
+
+    it('should not get a vote without a valid token', async () => {
+      const response = await request(app)
+        .get('/api/v1/votes')
+        .set('Authorization', 'Bearer 123')
+
+      expect(response.status).toBe(401)
+    })
+  })
   describe('create vote', () => {
     it('should create an upvote for a comment', async () => {
       const comment = {

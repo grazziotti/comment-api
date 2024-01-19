@@ -21,7 +21,9 @@ passport.use(
     const findUserByIdService = new FindUserByIdService(prismaRepository)
 
     const user = await findUserByIdService.execute(payload.id)
-    return user ? done(null, user) : done(notAuthorizedJson, false)
+    return user && user.deletedAt === null
+      ? done(null, user)
+      : done(notAuthorizedJson, false)
   }),
 )
 
@@ -32,7 +34,7 @@ export const privateRoute = (
 ) => {
   passport.authenticate('jwt', (err: Error, user: UserSave) => {
     if (err || !user) {
-      return response.status(401).json({ message: 'Invalid token.' })
+      return response.status(401).json({ error: 'Invalid token.' })
     }
 
     request.user = user

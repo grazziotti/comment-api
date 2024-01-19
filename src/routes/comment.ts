@@ -11,8 +11,18 @@ commentRoutes.get('/private', privateRoute, commentController.getAllPrivate)
 
 commentRoutes.get('/public', commentController.getAllPublic)
 
+commentRoutes.get('/:id', commentController.get)
+
 commentRoutes.post(
   '/',
+  privateRoute,
+  createCommentValidation,
+  validateAuth,
+  commentController.create,
+)
+
+commentRoutes.post(
+  '/reply',
   privateRoute,
   createCommentValidation,
   validateAuth,

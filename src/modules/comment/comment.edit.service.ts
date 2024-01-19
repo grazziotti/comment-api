@@ -1,3 +1,4 @@
+import { IUserRepository } from '../user/repositories/IUserRepository'
 import { ICommentRepository } from './repositories/ICommentRepository'
 
 type CommentEditRequest = {
@@ -7,12 +8,21 @@ type CommentEditRequest = {
 }
 
 class CommentEditService {
-  constructor(private commentRepository: ICommentRepository) {}
+  constructor(
+    private commentRepository: ICommentRepository,
+    private userRepository: IUserRepository,
+  ) {}
 
   public async execute(data: CommentEditRequest) {
     const { id, newContent, userId } = data
 
     const comment = await this.commentRepository.findById(id)
+
+    const user = await this.userRepository.findById(userId)
+
+    if (!user || user.deletedAt !== null) {
+      throw new Error('User not found.')
+    }
 
     if (!comment) {
       throw new Error('Comment not found.')

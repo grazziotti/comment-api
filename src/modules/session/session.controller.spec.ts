@@ -54,6 +54,27 @@ describe('session controller', () => {
     expect(response.body.error).toBe('Invalid credentials.')
   })
 
+  it('should handle login for a inactive user', async () => {
+    const password = 'TestPassword1234$'
+
+    const passwordHash = await hash(password, 8)
+
+    const user = await userRepository.save({
+      username: 'user2',
+      password: passwordHash,
+    })
+
+    await userRepository.delete(user.id)
+
+    const response = await request(app).post('/api/v1/sessions/').send({
+      username: 'user2',
+      password: 'TestPassword1234$',
+    })
+
+    expect(response.status).toBe(400)
+    expect(response.body.error).toBe('Invalid credentials.')
+  })
+
   it('should reject a username with less than 2 characters', async () => {
     const response = await request(app).post('/api/v1/sessions').send({
       username: 'a',

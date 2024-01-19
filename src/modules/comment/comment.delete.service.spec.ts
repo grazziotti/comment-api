@@ -12,8 +12,11 @@ let user2: UserSave
 
 beforeEach(async () => {
   commentInMemoryRepository = new CommentInMemoryRepository()
-  commentDeleteService = new CommentDeleteService(commentInMemoryRepository)
   userInMemoryRepository = new UserInMemoryRepository()
+  commentDeleteService = new CommentDeleteService(
+    commentInMemoryRepository,
+    userInMemoryRepository,
+  )
 
   const password = 'TestPassword1234$'
 
@@ -54,7 +57,7 @@ describe('delete comment service', () => {
   it('should not be able to delete a nonexistent comment ', async () => {
     const comment = {
       id: '123',
-      userId: 'user.id',
+      userId: user.id,
     }
     await expect(commentDeleteService.execute(comment)).rejects.toEqual(
       new Error('Comment not found.'),
@@ -79,5 +82,34 @@ describe('delete comment service', () => {
     ).rejects.toEqual(
       new Error('User is not authorized to delete this comment.'),
     )
+  })
+
+  it('should not be able to delete a comment from an inactive user', async () => {
+    const password = 'TestPassword1234$'
+    const passwordHash = await hash(password, 8)
+
+    const user = await userInMemoryRepository.save({
+      username: 'user3_test',
+      password: passwordHash,
+    })
+
+    const comment = {
+      content: 'Test content',
+      userId: user.id,
+      parentId: null,
+      replyToId: null,
+      replyToUserId: null,
+    }
+
+    const createdCommentResult = await commentInMemoryRepository.save(comment)
+
+    await userInMemoryRepository.delete(user.id)
+
+    await expect(
+      commentDeleteService.execute({
+        id: createdCommentResult.id,
+        userId: createdCommentResult.userId,
+      }),
+    ).rejects.toEqual(new Error('User not found.'))
   })
 })

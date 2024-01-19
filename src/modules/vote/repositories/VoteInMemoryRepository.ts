@@ -2,7 +2,6 @@ import { randomUUID } from 'crypto'
 import { IVoteRepository, VoteCreate, VoteSave } from './IVoteRepository'
 
 class VoteInMemoryRepository implements IVoteRepository {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   votes: VoteSave[] = []
 
   async save(data: VoteCreate): Promise<VoteSave> {
@@ -24,8 +23,8 @@ class VoteInMemoryRepository implements IVoteRepository {
     return vote ? vote : null
   }
 
-  async findVotesByCommentId(commentId: string): Promise<VoteSave[]> {
-    return this.votes.filter((vote) => vote.commentId === commentId)
+  async findVotesByUserId(userId: string): Promise<VoteSave[]> {
+    return this.votes.filter((vote) => vote.userId === userId)
   }
 
   async checkUserVoteForComment(
@@ -50,6 +49,10 @@ class VoteInMemoryRepository implements IVoteRepository {
     const voteIndex = this.votes.findIndex((vote) => vote.id === id)
     this.votes.splice(voteIndex, 1)
     return
+  }
+
+  async findVotesByCommentId(commentId: string): Promise<VoteSave[]> {
+    return this.votes.filter((vote) => vote.commentId === commentId)
   }
 }
 

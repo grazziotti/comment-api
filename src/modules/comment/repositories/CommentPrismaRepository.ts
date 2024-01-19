@@ -38,11 +38,13 @@ class CommentPrismaRepository implements ICommentRepository {
     })
     return comment
   }
+
   async getAll() {
     const comments = await prismaClient.comment.findMany()
 
     return comments
   }
+
   async edit(data: CommentEdit) {
     const { id, newContent } = data
 
