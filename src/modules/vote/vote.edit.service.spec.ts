@@ -74,34 +74,6 @@ describe('edit vote service', () => {
     ).rejects.toEqual(new Error('Vote not found.'))
   })
 
-  it('should not be able to edit a vote from another user', async () => {
-    const comment = {
-      content: 'Test content',
-      userId: user.id,
-      parentId: null,
-      replyToId: null,
-      replyToUserId: null,
-    }
-
-    const createdCommentResult = await commentInMemoryRepository.save(comment)
-
-    const vote = {
-      commentId: createdCommentResult.id,
-      userId: user2.id,
-      voteType: 'upVote',
-    }
-
-    const createdVoteResult = await voteInMemoryRepository.save(vote)
-
-    await expect(
-      voteEditService.execute({
-        userId: user.id,
-        voteId: createdVoteResult.id,
-        voteType: 'downVote',
-      }),
-    ).rejects.toEqual(new Error('User is not authorized to edit this vote.'))
-  })
-
   it('should not be able to edit a vote with a invalid voteType', async () => {
     const comment = {
       content: 'Test content',

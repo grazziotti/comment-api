@@ -10,15 +10,12 @@ class VoteEditService {
   constructor(private voteRepository: IVoteRepository) {}
 
   async execute(data: VoteEditRequest) {
-    const { voteId, userId, voteType } = data
+    const { voteId, voteType } = data
 
     const vote = await this.voteRepository.findById(voteId)
 
     if (!vote) {
       throw new Error('Vote not found.')
-    }
-    if (vote.userId !== userId) {
-      throw new Error('User is not authorized to edit this vote.')
     }
 
     if (voteType !== 'upVote' && voteType !== 'downVote') {

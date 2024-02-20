@@ -14,7 +14,7 @@ class VoteController {
     try {
       const user = request.user as UserSave
 
-      const { id } = request.params
+      const { voteId } = request.params
 
       const prismaVoteRepository = new VotePrismaRepository()
       const prismaUserRepository = new UserPrismaRepository()
@@ -24,7 +24,7 @@ class VoteController {
       )
 
       const vote = await voteGetService.execute({
-        id: id,
+        id: voteId,
         userId: user.id,
       })
 
@@ -89,14 +89,14 @@ class VoteController {
     try {
       const user = request.user as UserSave
 
-      const { id } = request.params
+      const { voteId } = request.params
       const { voteType } = request.body
 
       const prismaVoteRepository = new VotePrismaRepository()
       const voteEditService = new VoteEditService(prismaVoteRepository)
 
       const updatedVote = await voteEditService.execute({
-        voteId: id,
+        voteId,
         userId: user.id,
         voteType,
       })
@@ -112,7 +112,7 @@ class VoteController {
     try {
       const user = request.user as UserSave
 
-      const { id } = request.params
+      const { voteId } = request.params
 
       const prismaVoteRepository = new VotePrismaRepository()
       const prismaUserRepository = new UserPrismaRepository()
@@ -122,7 +122,7 @@ class VoteController {
         prismaUserRepository,
       )
 
-      await voteDeleteService.execute({ voteId: id, userId: user.id })
+      await voteDeleteService.execute({ voteId, userId: user.id })
 
       return response.status(204).send()
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

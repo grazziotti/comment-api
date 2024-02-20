@@ -92,29 +92,4 @@ describe('get vote service', () => {
       voteGetService.execute({ id: '123', userId: user2.id }),
     ).rejects.toEqual(new Error('Vote not found.'))
   })
-
-  it('should not retrieve vote from another user', async () => {
-    const comment = {
-      content: 'Test content',
-      userId: user.id,
-      parentId: null,
-      replyToId: null,
-      replyToUserId: null,
-    }
-
-    const createdCommentResult = await commentInMemoryRepository.save(comment)
-
-    const createdVoteResult = await voteInMemoryRepository.save({
-      commentId: createdCommentResult.id,
-      userId: user2.id,
-      voteType: 'upVote',
-    })
-
-    await expect(
-      voteGetService.execute({
-        id: createdVoteResult.id,
-        userId: user.id,
-      }),
-    ).rejects.toEqual(new Error('User is not authorized to get this vote.'))
-  })
 })

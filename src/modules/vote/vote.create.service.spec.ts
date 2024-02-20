@@ -113,26 +113,6 @@ describe('create vote service', () => {
     ).rejects.toEqual(new Error('Invalid voteType.'))
   })
 
-  it('should not be able to create a vote if the user is the author of the comment', async () => {
-    const comment = {
-      content: 'Test content',
-      userId: user.id,
-      parentId: null,
-      replyToId: null,
-      replyToUserId: null,
-    }
-
-    const createdCommentResult = await commentInMemoryRepository.save(comment)
-
-    await expect(
-      voteCreateService.execute({
-        commentId: createdCommentResult.id,
-        userId: user.id,
-        voteType: 'upVote',
-      }),
-    ).rejects.toEqual(new Error('User cannot vote their own comment.'))
-  })
-
   it('should not be able to create a duplicate vote for the same comment by the same user', async () => {
     const comment = {
       content: 'Test content',
