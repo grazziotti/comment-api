@@ -34,3 +34,16 @@ export const editUserValidation = [
       'Password must be at least 8 characters long, one uppercase letter, one lowercase letter, one number, and one special character',
     ),
 ]
+
+export const userRoleValidation = [
+  body('roleId')
+    .notEmpty()
+    .withMessage('role id is required')
+    .isString()
+    .withMessage('role id must be a string'),
+  body('userId')
+    .notEmpty()
+    .withMessage('user id is required')
+    .isString()
+    .withMessage('user id must be a string'),
+]
