@@ -1,13 +1,25 @@
+import { RoleInMemoryRepository } from '../role/repositories/RoleInMemoryRepository'
+import { UserRoleInMemoryRepository } from '../userRole/repositories/UserRoleInMemoryRepository'
 import { UserInMemoryRepository } from './repositories/UserInMemoryRepository'
 import { CreateUserService } from './user.create.service'
 
 let createUserService: CreateUserService
 let userInMemoryRepository: UserInMemoryRepository
+let userRoleInMemoryRepository: UserRoleInMemoryRepository
+let roleInMemoryRepository: RoleInMemoryRepository
 
 describe('create user service', () => {
-  beforeAll(() => {
+  beforeAll(async () => {
     userInMemoryRepository = new UserInMemoryRepository()
-    createUserService = new CreateUserService(userInMemoryRepository)
+    userRoleInMemoryRepository = new UserRoleInMemoryRepository()
+    roleInMemoryRepository = new RoleInMemoryRepository()
+    createUserService = new CreateUserService(
+      userInMemoryRepository,
+      userRoleInMemoryRepository,
+      roleInMemoryRepository,
+    )
+
+    await roleInMemoryRepository.save({ name: 'user' })
   })
 
   it('should be able to create a new user', async () => {
