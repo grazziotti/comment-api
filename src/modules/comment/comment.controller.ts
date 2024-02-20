@@ -48,13 +48,12 @@ class CommentController {
   async get(request: Request, response: Response): Promise<Response> {
     try {
       const prismaCommentRepository = new CommentPrismaRepository()
-      const commentGetAllService = new CommentGetService(
-        prismaCommentRepository,
-      )
+      const commentGetService = new CommentGetService(prismaCommentRepository)
 
-      const { id } = request.params
+      const { commentId } = request.params
 
-      const commentsWithRepliesAndLikes = await commentGetAllService.execute(id)
+      const commentsWithRepliesAndLikes =
+        await commentGetService.execute(commentId)
 
       return response.json(commentsWithRepliesAndLikes)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -91,7 +90,7 @@ class CommentController {
     try {
       const user = request.user as UserSave
 
-      const { id } = request.params
+      const { commentId } = request.params
       const { content } = request.body
 
       const prismaCommentRepository = new CommentPrismaRepository()
@@ -104,7 +103,7 @@ class CommentController {
       const updatedComment = await commentEditService.execute({
         newContent: content,
         userId: user.id,
-        id,
+        id: commentId,
       })
 
       return response.status(200).json(updatedComment)
@@ -117,7 +116,7 @@ class CommentController {
     try {
       const user = request.user as UserSave
 
-      const { id } = request.params
+      const { commentId } = request.params
 
       const prismaCommentRepository = new CommentPrismaRepository()
       const prismaUserRepository = new UserPrismaRepository()
@@ -126,7 +125,7 @@ class CommentController {
         prismaUserRepository,
       )
 
-      await commentDeleteService.execute({ id, userId: user.id })
+      await commentDeleteService.execute({ id: commentId, userId: user.id })
 
       return response.status(204).send()
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

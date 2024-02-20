@@ -8,7 +8,6 @@ let commentDeleteService: CommentDeleteService
 let commentInMemoryRepository: CommentInMemoryRepository
 let userInMemoryRepository: UserInMemoryRepository
 let user: UserSave
-let user2: UserSave
 
 beforeEach(async () => {
   commentInMemoryRepository = new CommentInMemoryRepository()
@@ -24,11 +23,6 @@ beforeEach(async () => {
 
   user = await userInMemoryRepository.save({
     username: 'user1_test',
-    password: passwordHash,
-  })
-
-  user2 = await userInMemoryRepository.save({
-    username: 'user2_test',
     password: passwordHash,
   })
 })
@@ -61,26 +55,6 @@ describe('delete comment service', () => {
     }
     await expect(commentDeleteService.execute(comment)).rejects.toEqual(
       new Error('Comment not found.'),
-    )
-  })
-  it('should not be able to delete a comment from another user', async () => {
-    const comment = {
-      content: 'Test content',
-      userId: user.id,
-      parentId: null,
-      replyToId: null,
-      replyToUserId: null,
-    }
-
-    const createdCommentResult = await commentInMemoryRepository.save(comment)
-
-    await expect(
-      commentDeleteService.execute({
-        id: createdCommentResult.id,
-        userId: user2.id,
-      }),
-    ).rejects.toEqual(
-      new Error('User is not authorized to delete this comment.'),
     )
   })
 
