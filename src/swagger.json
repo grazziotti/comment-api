@@ -95,13 +95,25 @@
             }
           }
         }
-      },
+      }
+    },
+    "/users/{id}": {
       "get": {
         "tags": ["User"],
         "description": "Show logged in user details",
         "security": [
           {
             "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Show user by id",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -116,7 +128,7 @@
             }
           },
           "401": {
-            "description": "Access token is required",
+            "description": "Unauthorized",
             "content": {
               "application/json": {
                 "schema": {
@@ -143,6 +155,16 @@
         "security": [
           {
             "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Update user by id",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "requestBody": {
@@ -199,6 +221,16 @@
             "bearerAuth": []
           }
         ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Delete user by id",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "204": {
             "description": "User successfully deleted",
@@ -209,7 +241,7 @@
             }
           },
           "401": {
-            "description": "Access token is required",
+            "description": "Unauthorized",
             "content": {
               "application/json": {
                 "schema": {
@@ -262,7 +294,7 @@
             }
           },
           "401": {
-            "description": "Access token is required",
+            "description": "Unauthorized",
             "content": {
               "application/json": {
                 "schema": {
@@ -373,7 +405,7 @@
             }
           },
           "401": {
-            "description": "Access token is required",
+            "description": "Unauthorized",
             "content": {
               "application/json": {
                 "schema": { "$ref": "#/components/schemas/ErrorMessage" }
@@ -422,7 +454,7 @@
             }
           },
           "401": {
-            "description": "Access token is required",
+            "description": "Unauthorized",
             "content": {
               "application/json": {
                 "schema": {
@@ -483,7 +515,7 @@
             }
           },
           "401": {
-            "description": "Access token is required",
+            "description": "Unauthorized",
             "content": {
               "application/json": {
                 "schema": {
@@ -535,7 +567,7 @@
             }
           },
           "401": {
-            "description": "Access token is required",
+            "description": "Unauthorized",
             "content": {
               "application/json": {
                 "schema": {
@@ -588,7 +620,7 @@
             }
           },
           "401": {
-            "description": "Access token is required",
+            "description": "Unauthorized",
             "content": {
               "application/json": {
                 "schema": {
@@ -631,7 +663,7 @@
             }
           },
           "401": {
-            "description": "Access token is required",
+            "description": "Unauthorized",
             "content": {
               "application/json": {
                 "schema": {
@@ -678,7 +710,7 @@
             }
           },
           "401": {
-            "description": "Access token is required",
+            "description": "Unauthorized",
             "content": {
               "application/json": {
                 "schema": {
@@ -729,7 +761,7 @@
             }
           },
           "401": {
-            "description": "Access token is required",
+            "description": "Unauthorized",
             "content": {
               "application/json": {
                 "schema": {
@@ -777,7 +809,7 @@
             }
           },
           "401": {
-            "description": "Access token is required",
+            "description": "Unauthorized",
             "content": {
               "application/json": {
                 "schema": {
