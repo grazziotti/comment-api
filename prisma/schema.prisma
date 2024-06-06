@@ -20,6 +20,7 @@ model User {
   deletedAt DateTime? 
   repliedComments Comment[] @relation("replyToUser")
   roles UserRole[]
+  avatar String?
   
   @@map("users")
 }
