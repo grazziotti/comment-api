@@ -1,6 +1,7 @@
 export type UserCreate = {
   username: string
   password: string
+  avatar: string | null
 }
 
 export type UserEdit = {
@@ -14,6 +15,7 @@ export type UserSave = {
   password: string
   createdAt: Date
   deletedAt: Date | null
+  avatar: string | null
 }
 
 export interface IUserRepository {

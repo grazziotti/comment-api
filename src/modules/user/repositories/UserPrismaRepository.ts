@@ -7,11 +7,12 @@ import {
 } from './IUserRepository'
 
 class UserPrismaRepository implements IUserRepository {
-  async save({ username, password }: UserCreate): Promise<UserSave> {
+  async save({ username, password, avatar }: UserCreate): Promise<UserSave> {
     const user = await prismaClient.user.create({
       data: {
         username,
         password,
+        avatar,
       },
     })
     return user
