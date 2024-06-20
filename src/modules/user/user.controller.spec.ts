@@ -8,11 +8,23 @@ import { IUserRepository } from './repositories/IUserRepository'
 import { UserPrismaRepository } from './repositories/UserPrismaRepository'
 import { sign } from 'jsonwebtoken'
 import { hash } from 'bcrypt'
+import { RolePrismaRepository } from '../role/repositories/RolePrismaRepository'
+import { UserRolePrismaRepository } from '../userRole/repositories/UserRolePrismaRepository'
+import { RoleSave } from '../role/repositories/IRoleRepository'
 
-let userRepository: IUserRepository
+let userPrismaRepository: IUserRepository
+let rolePrismaRepository: RolePrismaRepository
+let userRolePrismaRepository: UserRolePrismaRepository
+let roleUser: RoleSave
+let roleAdmin: RoleSave
 
 beforeAll(async () => {
-  userRepository = new UserPrismaRepository()
+  userPrismaRepository = new UserPrismaRepository()
+  rolePrismaRepository = new RolePrismaRepository()
+  userRolePrismaRepository = new UserRolePrismaRepository()
+
+  roleUser = await rolePrismaRepository.save({ name: 'user' })
+  roleAdmin = await rolePrismaRepository.save({ name: 'admin' })
 })
 
 describe('user controller', () => {
@@ -48,7 +60,7 @@ describe('user controller', () => {
         password: 'TestPassword1234$',
       })
 
-      const user = await userRepository.findById(response.body.id)
+      const user = await userPrismaRepository.findById(response.body.id)
 
       expect(user).toHaveProperty('id')
       expect(user?.password).not.toBe('TestPassword1234$')
@@ -145,9 +157,14 @@ describe('user controller', () => {
       const password = 'TestPassword1234$'
       const passwordHash = await hash(password, 8)
 
-      const user = await userRepository.save({
+      const user = await userPrismaRepository.save({
         username: 'user4',
         password: passwordHash,
+      })
+
+      await userRolePrismaRepository.save({
+        roleId: roleUser.id,
+        userId: user.id,
       })
 
       const userToken = sign(
@@ -156,7 +173,7 @@ describe('user controller', () => {
       )
 
       const response = await request(app)
-        .get('/api/v1/users')
+        .get(`/api/v1/users/${user.id}`)
         .set('Authorization', `Bearer ${userToken}`)
 
       expect(response.status).toBe(200)
@@ -166,32 +183,32 @@ describe('user controller', () => {
       const password = 'TestPassword1234$'
       const passwordHash = await hash(password, 8)
 
-      await userRepository.save({
-        username: 'user5',
+      const user = await userPrismaRepository.save({
+        username: 'user85',
         password: passwordHash,
       })
 
       const response = await request(app)
-        .get('/api/v1/users')
-        .set('Authorization', 'Bearer invalid')
+        .get(`/api/v1/users/${user.id}`)
+        .set('Authorization', `Bearer invalid`)
 
       expect(response.status).toBe(401)
-      expect(response.body.message).toEqual('Invalid token.')
+      expect(response.text).toEqual('{"error":"Invalid token."}')
     })
 
     it('should not be able to get user data without a token', async () => {
       const password = 'TestPassword1234$'
       const passwordHash = await hash(password, 8)
 
-      await userRepository.save({
+      const user = await userPrismaRepository.save({
         username: 'user6',
         password: passwordHash,
       })
 
-      const response = await request(app).get('/api/v1/users')
+      const response = await request(app).get(`/api/v1/users/${user.id}`)
 
       expect(response.status).toBe(401)
-      expect(response.body.message).toEqual('Invalid token.')
+      expect(response.text).toEqual('{"error":"Invalid token."}')
     })
   })
   describe('edit user', () => {
@@ -199,9 +216,14 @@ describe('user controller', () => {
       const password = 'TestPassword1234$'
       const passwordHash = await hash(password, 8)
 
-      const user = await userRepository.save({
+      const user = await userPrismaRepository.save({
         username: 'user1',
         password: passwordHash,
+      })
+
+      await userRolePrismaRepository.save({
+        roleId: roleUser.id,
+        userId: user.id,
       })
 
       const userToken = sign(
@@ -210,7 +232,7 @@ describe('user controller', () => {
       )
 
       const response = await request(app)
-        .put('/api/v1/users/')
+        .put(`/api/v1/users/${user.id}`)
         .set('Authorization', `Bearer ${userToken}`)
         .send({
           password: 'Jujuba$1234',
@@ -220,13 +242,97 @@ describe('user controller', () => {
       expect(response.body).toHaveProperty('id')
     })
 
+    it('should be able to edit another user if the user is an admin', async () => {
+      const password = 'TestPassword1234$'
+      const passwordHash = await hash(password, 8)
+
+      const user = await userPrismaRepository.save({
+        username: 'user89',
+        password: passwordHash,
+      })
+
+      const admin = await userPrismaRepository.save({
+        username: 'admin',
+        password: passwordHash,
+      })
+
+      await userRolePrismaRepository.save({
+        roleId: roleUser.id,
+        userId: user.id,
+      })
+
+      await userRolePrismaRepository.save({
+        roleId: roleAdmin.id,
+        userId: admin.id,
+      })
+
+      const adminToken = sign(
+        { id: admin.id, username: admin.username },
+        process.env.JWT_SECRET as string,
+      )
+
+      const response = await request(app)
+        .put(`/api/v1/users/${user.id}`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          password: 'Jujuba$1234',
+        })
+
+      expect(response.status).toBe(200)
+      expect(response.body).toHaveProperty('id')
+    })
+
+    it('should not be able to edit another user', async () => {
+      const password = 'TestPassword1234$'
+      const passwordHash = await hash(password, 8)
+
+      const user = await userPrismaRepository.save({
+        username: 'user87',
+        password: passwordHash,
+      })
+
+      const user2 = await userPrismaRepository.save({
+        username: 'user88',
+        password: passwordHash,
+      })
+
+      await userRolePrismaRepository.save({
+        roleId: roleUser.id,
+        userId: user.id,
+      })
+
+      await userRolePrismaRepository.save({
+        roleId: roleUser.id,
+        userId: user2.id,
+      })
+
+      const user2Token = sign(
+        { id: user2.id, username: user2.username },
+        process.env.JWT_SECRET as string,
+      )
+
+      const response = await request(app)
+        .put(`/api/v1/users/${user.id}`)
+        .set('Authorization', `Bearer ${user2Token}`)
+        .send({
+          password: 'Jujuba$1234',
+        })
+
+      expect(response.status).toBe(401)
+    })
+
     it('should not be able to edit a user with an invalid password', async () => {
       const password = 'TestPassword1234$'
       const passwordHash = await hash(password, 8)
 
-      const user = await userRepository.save({
+      const user = await userPrismaRepository.save({
         username: 'user2',
         password: passwordHash,
+      })
+
+      await userRolePrismaRepository.save({
+        roleId: roleUser.id,
+        userId: user.id,
       })
 
       const userToken = sign(
@@ -235,7 +341,7 @@ describe('user controller', () => {
       )
 
       const response = await request(app)
-        .put('/api/v1/users/')
+        .put(`/api/v1/users/${user.id}`)
         .set('Authorization', `Bearer ${userToken}`)
         .send({
           password: 'invalidPassword',
@@ -248,24 +354,40 @@ describe('user controller', () => {
     })
 
     it('should not be able to edit a user with an invalid token', async () => {
+      const password = 'TestPassword1234$'
+      const passwordHash = await hash(password, 8)
+
+      const user = await userPrismaRepository.save({
+        username: 'user3',
+        password: passwordHash,
+      })
+
       const response = await request(app)
-        .put('/api/v1/users/')
+        .put(`/api/v1/users/${user.id}`)
         .set('Authorization', 'Bearer invalid-token')
         .send({
           password: 'Jujuba$1234',
         })
 
       expect(response.status).toBe(401)
-      expect(response.body.message).toBe('Invalid token.')
+      expect(response.text).toEqual('{"error":"Invalid token."}')
     })
 
     it('should not be able to edit a user without a token', async () => {
-      const response = await request(app).put('/api/v1/users/').send({
+      const password = 'TestPassword1234$'
+      const passwordHash = await hash(password, 8)
+
+      const user = await userPrismaRepository.save({
+        username: 'user10',
+        password: passwordHash,
+      })
+
+      const response = await request(app).put(`/api/v1/users/${user.id}`).send({
         password: 'Jujuba$1234',
       })
 
       expect(response.status).toBe(401)
-      expect(response.body.message).toBe('Invalid token.')
+      expect(response.text).toEqual('{"error":"Invalid token."}')
     })
   })
   describe('delete user', () => {
@@ -273,9 +395,14 @@ describe('user controller', () => {
       const password = 'TestPassword1234$'
       const passwordHash = await hash(password, 8)
 
-      const user = await userRepository.save({
-        username: 'user3',
+      const user = await userPrismaRepository.save({
+        username: 'user7',
         password: passwordHash,
+      })
+
+      await userRolePrismaRepository.save({
+        roleId: roleUser.id,
+        userId: user.id,
       })
 
       const userToken = sign(
@@ -284,31 +411,124 @@ describe('user controller', () => {
       )
 
       const response = await request(app)
-        .delete('/api/v1/users/')
+        .delete(`/api/v1/users/${user.id}`)
         .set('Authorization', `Bearer ${userToken}`)
 
       expect(response.status).toBe(204)
 
-      const deletedUser = await userRepository.findById(user.id)
+      const deletedUser = await userPrismaRepository.findById(user.id)
+
+      expect(deletedUser).toHaveProperty('deletedAt')
+      expect(deletedUser?.deletedAt).not.toBe(null)
+    })
+
+    it('should not be able to delete another user', async () => {
+      const password = 'TestPassword1234$'
+      const passwordHash = await hash(password, 8)
+
+      const user = await userPrismaRepository.save({
+        username: 'user90',
+        password: passwordHash,
+      })
+
+      const user2 = await userPrismaRepository.save({
+        username: 'user91',
+        password: passwordHash,
+      })
+
+      await userRolePrismaRepository.save({
+        roleId: roleUser.id,
+        userId: user.id,
+      })
+
+      await userRolePrismaRepository.save({
+        roleId: roleUser.id,
+        userId: user2.id,
+      })
+
+      const user2Token = sign(
+        { id: user2.id, username: user2.username },
+        process.env.JWT_SECRET as string,
+      )
+
+      const response = await request(app)
+        .delete(`/api/v1/users/${user.id}`)
+        .set('Authorization', `Bearer ${user2Token}`)
+
+      expect(response.status).toBe(401)
+    })
+
+    it('should be able to delete another user if the user is an admin', async () => {
+      const password = 'TestPassword1234$'
+      const passwordHash = await hash(password, 8)
+
+      const user = await userPrismaRepository.save({
+        username: 'user93',
+        password: passwordHash,
+      })
+
+      const admin = await userPrismaRepository.save({
+        username: 'admin2',
+        password: passwordHash,
+      })
+
+      await userRolePrismaRepository.save({
+        roleId: roleUser.id,
+        userId: user.id,
+      })
+
+      await userRolePrismaRepository.save({
+        roleId: roleAdmin.id,
+        userId: admin.id,
+      })
+
+      const adminToken = sign(
+        { id: admin.id, username: admin.username },
+        process.env.JWT_SECRET as string,
+      )
+
+      const response = await request(app)
+        .delete(`/api/v1/users/${user.id}`)
+        .set('Authorization', `Bearer ${adminToken}`)
+
+      expect(response.status).toBe(204)
+
+      const deletedUser = await userPrismaRepository.findById(user.id)
 
       expect(deletedUser).toHaveProperty('deletedAt')
       expect(deletedUser?.deletedAt).not.toBe(null)
     })
 
     it('should not be able to delete a user without authentication', async () => {
-      const response = await request(app).delete('/api/v1/users/')
+      const password = 'TestPassword1234$'
+      const passwordHash = await hash(password, 8)
+
+      const user = await userPrismaRepository.save({
+        username: 'user5',
+        password: passwordHash,
+      })
+
+      const response = await request(app).delete(`/api/v1/users/${user.id}`)
 
       expect(response.status).toBe(401)
-      expect(response.body.message).toBe('Invalid token.')
+      expect(response.text).toEqual('{"error":"Invalid token."}')
     })
 
     it('should not be able to delete a user with an invalid token', async () => {
+      const password = 'TestPassword1234$'
+      const passwordHash = await hash(password, 8)
+
+      const user = await userPrismaRepository.save({
+        username: 'user8',
+        password: passwordHash,
+      })
+
       const response = await request(app)
-        .delete('/api/v1/users/')
+        .delete(`/api/v1/users/${user.id}`)
         .set('Authorization', 'Bearer invalid-token')
 
       expect(response.status).toBe(401)
-      expect(response.body.message).toBe('Invalid token.')
+      expect(response.text).toEqual('{"error":"Invalid token."}')
     })
   })
 })

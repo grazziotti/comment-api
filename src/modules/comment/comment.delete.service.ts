@@ -27,10 +27,6 @@ class CommentDeleteService {
       throw new Error('Comment not found.')
     }
 
-    if (comment.userId !== userId) {
-      throw new Error('User is not authorized to delete this comment.')
-    }
-
     await this.commentRepository.delete(id)
 
     return

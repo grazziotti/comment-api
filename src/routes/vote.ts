@@ -6,6 +6,7 @@ import {
   editVoteValidation,
 } from '@/validators/voteValidator'
 import { validateAuth } from '@/validators/validateAuth'
+import { authVote } from '@/middlewares/vote'
 
 const voteRoutes = Router()
 const voteController = new VoteController()
@@ -18,14 +19,15 @@ voteRoutes.post(
   voteController.create,
 )
 voteRoutes.get('/', privateRoute, voteController.getAll)
-voteRoutes.get('/:id', privateRoute, voteController.get)
+voteRoutes.get('/:voteId', privateRoute, authVote, voteController.get)
 voteRoutes.put(
-  '/:id',
+  '/:voteId',
+  privateRoute,
+  authVote,
   editVoteValidation,
   validateAuth,
-  privateRoute,
   voteController.edit,
 )
-voteRoutes.delete('/:id', privateRoute, voteController.delete)
+voteRoutes.delete('/:voteId', privateRoute, authVote, voteController.delete)
 
 export default voteRoutes

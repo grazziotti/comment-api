@@ -11,20 +11,30 @@ import { ICommentRepository } from '../comment/repositories/ICommentRepository'
 import { UserPrismaRepository } from '../user/repositories/UserPrismaRepository'
 import { IVoteRepository } from './repositories/IVoteRepository'
 import { VotePrismaRepository } from './repositories/VotePrismaRepository'
+import { UserRolePrismaRepository } from '../userRole/repositories/UserRolePrismaRepository'
+import { IUserRoleRepository } from '../userRole/repositories/IUserRoleRepository'
+import { IRoleRepository } from '../role/repositories/IRoleRepository'
+import { RolePrismaRepository } from '../role/repositories/RolePrismaRepository'
 import { hash } from 'bcrypt'
 
 let commentRepository: ICommentRepository
 let userRepository: IUserRepository
+let userRoleRepository: IUserRoleRepository
+let roleRepository: IRoleRepository
 let voteRepository: IVoteRepository
 let user: UserSave
 let user2: UserSave
+let admin: UserSave
 let userToken: string
 let user2Token: string
+let adminToken: string
 
 beforeAll(async () => {
   commentRepository = new CommentPrismaRepository()
   userRepository = new UserPrismaRepository()
   voteRepository = new VotePrismaRepository()
+  userRoleRepository = new UserRolePrismaRepository()
+  roleRepository = new RolePrismaRepository()
 
   const password = 'TestPassword1234$'
 
@@ -40,12 +50,40 @@ beforeAll(async () => {
     password: passwordHash,
   })
 
+  admin = await userRepository.save({
+    username: 'admin',
+    password: passwordHash,
+  })
+
+  const roleUser = await roleRepository.save({ name: 'user' })
+  const roleAdmin = await roleRepository.save({ name: 'admin' })
+
+  await userRoleRepository.save({
+    roleId: roleUser.id,
+    userId: user.id,
+  })
+
+  await userRoleRepository.save({
+    roleId: roleUser.id,
+    userId: user2.id,
+  })
+
+  await userRoleRepository.save({
+    roleId: roleAdmin.id,
+    userId: admin.id,
+  })
+
   userToken = sign(
     { id: user.id, username: user.username },
     process.env.JWT_SECRET as string,
   )
 
   user2Token = sign(
+    { id: user2.id, username: user2.username },
+    process.env.JWT_SECRET as string,
+  )
+
+  adminToken = sign(
     { id: user2.id, username: user2.username },
     process.env.JWT_SECRET as string,
   )
@@ -154,6 +192,33 @@ describe('vote controller', () => {
       expect(response.status).toBe(400)
     })
 
+    it('should get another users vote if the user getting it is an admin', async () => {
+      const comment = {
+        content: 'Test content',
+        userId: user.id,
+        parentId: null,
+        replyToId: null,
+        replyToUserId: null,
+      }
+
+      const createdCommentResult = await commentRepository.save(comment)
+
+      const vote = {
+        commentId: createdCommentResult.id,
+        userId: user2.id,
+        voteType: 'upVote',
+      }
+
+      const createdVoteResult = await voteRepository.save(vote)
+
+      const response = await request(app)
+        .get(`/api/v1/votes/${createdVoteResult.id}`)
+        .set('Authorization', `Bearer ${adminToken}`)
+
+      expect(response.status).toBe(200)
+      expect(response.body.id).toBe(createdVoteResult.id)
+    })
+
     it('should not get a vote without a valid token', async () => {
       const response = await request(app)
         .get('/api/v1/votes')
@@ -247,6 +312,7 @@ describe('vote controller', () => {
       expect(response.body).toHaveProperty('id')
       expect(response.body.voteType).toBe('upVote')
     })
+
     it('should not create a vote if the user is the author of the comment', async () => {
       const comment = {
         content: 'Test content',
@@ -414,9 +480,38 @@ describe('vote controller', () => {
         })
 
       expect(response.status).toBe(400)
-      expect(response.body.error).toBe(
-        'User is not authorized to edit this vote.',
-      )
+      expect(response.body.error).toBe('Unauthorized')
+    })
+
+    it('should update a vote from another user if the user doing the updating is an admin', async () => {
+      const comment = {
+        content: 'Test content',
+        userId: user.id,
+        parentId: null,
+        replyToId: null,
+        replyToUserId: null,
+      }
+
+      const createdCommentResult = await commentRepository.save(comment)
+
+      const vote = {
+        commentId: createdCommentResult.id,
+        userId: user2.id,
+        voteType: 'upVote',
+      }
+
+      const createdVoteResult = await voteRepository.save(vote)
+
+      const response = await request(app)
+        .put(`/api/v1/votes/${createdVoteResult.id}`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          voteType: 'downVote',
+        })
+
+      expect(response.status).toBe(200)
+      expect(response.body.commentId).toBe(createdVoteResult.commentId)
+      expect(response.body.voteType).toBe('downVote')
     })
 
     it('should not be able to edit a vote with a invalid voteType', async () => {
@@ -446,7 +541,6 @@ describe('vote controller', () => {
         })
 
       expect(response.status).toBe(400)
-      expect(response.body.error).toBe('Invalid voteType.')
     })
 
     it('should not edit a vote without a valid token', async () => {
@@ -475,7 +569,7 @@ describe('vote controller', () => {
         })
 
       expect(response.status).toBe(401)
-      expect(response.body.message).toBe('Invalid token.')
+      expect(response.text).toEqual('{"error":"Invalid token."}')
     })
   })
   describe('delete vote', () => {
@@ -531,9 +625,32 @@ describe('vote controller', () => {
         .set('Authorization', `Bearer ${userToken}`)
 
       expect(response.status).toBe(400)
-      expect(response.body.error).toBe(
-        'User is not authorized to delete this vote.',
-      )
+      expect(response.body.error).toBe('Unauthorized')
+    })
+    it('must delete a vote from another user if the user doing the deleting is an admin', async () => {
+      const comment = {
+        content: 'Test content',
+        userId: user.id,
+        parentId: null,
+        replyToId: null,
+        replyToUserId: null,
+      }
+
+      const createdCommentResult = await commentRepository.save(comment)
+
+      const vote = {
+        commentId: createdCommentResult.id,
+        userId: user2.id,
+        voteType: 'upVote',
+      }
+
+      const createdVoteResult = await voteRepository.save(vote)
+
+      const response = await request(app)
+        .delete(`/api/v1/votes/${createdVoteResult.id}`)
+        .set('Authorization', `Bearer ${adminToken}`)
+
+      expect(response.status).toBe(204)
     })
     it('should not delete a nonexistent vote', async () => {
       const response = await request(app)

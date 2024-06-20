@@ -1,21 +1,33 @@
 import { Request, Response } from 'express'
 import { UserPrismaRepository } from './repositories/UserPrismaRepository'
 import { CreateUserService } from './user.create.service'
-import { UserSave } from './repositories/IUserRepository'
 import { UserEditService } from './user.edit.service'
 import { UserDeleteService } from './user.delete.service'
+import { FindUserByIdService } from './user.findById.service'
+import { RolePrismaRepository } from '../role/repositories/RolePrismaRepository'
+import { UserRolePrismaRepository } from '../userRole/repositories/UserRolePrismaRepository'
 
 class UserController {
   async create(request: Request, response: Response): Promise<Response> {
     try {
       const { username, password } = request.body
+      const avatar = request.file
 
-      const prismaRepository = new UserPrismaRepository()
-      const createUserService = new CreateUserService(prismaRepository)
+      const userPrismaRepository = new UserPrismaRepository()
+      const userRolePrismaRepository = new UserRolePrismaRepository()
+      const rolePrismaRepository = new RolePrismaRepository()
+      const createUserService = new CreateUserService(
+        userPrismaRepository,
+        userRolePrismaRepository,
+        rolePrismaRepository,
+      )
 
       const user = await createUserService.execute({
         username,
         password,
+        avatar: avatar
+          ? { path: avatar.path, filename: avatar.filename }
+          : null,
       })
 
       return response.status(201).json(user)
@@ -25,18 +37,28 @@ class UserController {
     }
   }
   async get(request: Request, response: Response): Promise<Response> {
-    const user = request.user as UserSave
+    try {
+      const { id } = request.params
 
-    return response.status(200).json({
-      id: user.id,
-      username: user.username,
-      createdAt: user.createdAt,
-      deletedAt: user.deletedAt,
-    })
+      const userPrismaRepository = new UserPrismaRepository()
+      const findUserByIdService = new FindUserByIdService(userPrismaRepository)
+
+      const user = await findUserByIdService.execute(id)
+
+      return response.status(200).json({
+        id: user.id,
+        username: user.username,
+        createdAt: user.createdAt,
+        deletedAt: user.deletedAt,
+      })
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      return response.status(400).json({ error: err.message })
+    }
   }
   async update(request: Request, response: Response): Promise<Response> {
     try {
-      const user = request.user as UserSave
+      const { id } = request.params
 
       const { password } = request.body
 
@@ -44,7 +66,7 @@ class UserController {
       const userEditService = new UserEditService(prismaRepository)
 
       const updatedUser = await userEditService.execute({
-        id: user.id,
+        id,
         password,
       })
 
@@ -56,12 +78,12 @@ class UserController {
   }
   async delete(request: Request, response: Response): Promise<Response> {
     try {
-      const user = request.user as UserSave
+      const { id } = request.params
 
       const prismaRepository = new UserPrismaRepository()
       const userDeleteService = new UserDeleteService(prismaRepository)
 
-      await userDeleteService.execute(user.id)
+      await userDeleteService.execute(id)
 
       return response.status(204).send()
 

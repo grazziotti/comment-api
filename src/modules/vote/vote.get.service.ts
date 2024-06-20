@@ -27,10 +27,6 @@ class VoteGetService {
       throw new Error('Vote not found.')
     }
 
-    if (vote && vote.userId !== userId) {
-      throw new Error('User is not authorized to get this vote.')
-    }
-
     return vote
   }
 }

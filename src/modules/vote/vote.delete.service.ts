@@ -27,10 +27,6 @@ class VoteDeleteService {
       throw new Error('Vote not found.')
     }
 
-    if (vote.userId !== userId) {
-      throw new Error('User is not authorized to delete this vote.')
-    }
-
     await this.voteRepository.delete(vote.id)
 
     return

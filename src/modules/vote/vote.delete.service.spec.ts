@@ -76,32 +76,6 @@ describe('delete vote service', () => {
     ).rejects.toEqual(new Error('Vote not found.'))
   })
 
-  it('should throw an error when trying to delete a vote without correct credentials', async () => {
-    const comment = {
-      content: 'Test content',
-      userId: user.id,
-      parentId: null,
-      replyToId: null,
-      replyToUserId: null,
-    }
-
-    const createdCommentResult = await commentInMemoryRepository.save(comment)
-
-    const vote = {
-      commentId: createdCommentResult.id,
-      userId: user2.id,
-      voteType: 'upVote',
-    }
-
-    const createdVoteResult = await voteInMemoryRepository.save(vote)
-
-    await expect(
-      voteDeleteService.execute({
-        userId: user.id,
-        voteId: createdVoteResult.id,
-      }),
-    ).rejects.toEqual(new Error('User is not authorized to delete this vote.'))
-  })
   it('should not be able to delete a vote from an inactive user', async () => {
     const password = 'TestPassword1234$'
     const passwordHash = await hash(password, 8)

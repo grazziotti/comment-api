@@ -28,10 +28,6 @@ class CommentEditService {
       throw new Error('Comment not found.')
     }
 
-    if (comment.userId !== userId) {
-      throw new Error('User is not authorized to edit this comment.')
-    }
-
     const updatedComment = await this.commentRepository.edit({
       id,
       newContent,
