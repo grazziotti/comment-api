@@ -2,10 +2,10 @@ import { body } from 'express-validator'
 
 export const createUserValidation = [
   body('username')
-    .isLength({ min: 2 })
-    .withMessage('Username must have at least 2 characters.')
-    .isLength({ max: 30 })
-    .withMessage('Username must have at most 30 characters.')
+    .isLength({ min: 4 })
+    .withMessage('Username must have at least 4 characters.')
+    .isLength({ max: 20 })
+    .withMessage('Username must have at most 20 characters.')
     .trim()
     .isLowercase()
     .withMessage('Username must be in lowercase.')
