@@ -20,6 +20,7 @@ beforeAll(async () => {
   await userRepository.save({
     username: 'user1',
     password: passwordHash,
+    avatar: null,
   })
 })
 
@@ -62,6 +63,7 @@ describe('session controller', () => {
     const user = await userRepository.save({
       username: 'user2',
       password: passwordHash,
+      avatar: null,
     })
 
     await userRepository.delete(user.id)

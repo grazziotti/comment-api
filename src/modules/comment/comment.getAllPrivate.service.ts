@@ -8,9 +8,13 @@ type CommentDataType = {
   createdAt: Date
   updatedAt: Date | null
   score: number
-  voted: string | null
+  voted: {
+    voteId: string | null
+    voteType: string | null
+  }
   user: {
     username: string
+    avatar: string | null
   }
   replies: ReplyDataType[]
 }
@@ -21,13 +25,18 @@ type ReplyDataType = {
   createdAt: Date
   updatedAt: Date | null
   score: number
-  voted: string | null
+  voted: {
+    voteId: string | null
+    voteType: string | null
+  }
   user: {
     username: string
+    avatar: string | null
   }
   replyTo: {
     user: {
       username: string
+      avatar: string | null
     }
   }
 }
@@ -74,20 +83,12 @@ class CommentGetAllPrivateService {
                 throw new Error('User not found.')
               }
 
-              if (reply.replyToId === null) {
-                throw new Error('Invalid reply.')
-              }
-
-              const commentToReply = await this.commentRepository.findById(
-                reply.replyToId,
-              )
-
-              if (!commentToReply) {
-                throw new Error('Comment not found.')
+              if (reply.replyToUserId === null) {
+                throw new Error('User not found.')
               }
 
               const userToReply = await this.userRepository.findById(
-                commentToReply.userId,
+                reply.replyToUserId,
               )
 
               if (!userToReply) {
@@ -102,6 +103,10 @@ class CommentGetAllPrivateService {
                 (replyVote) => replyVote.voteType === 'upVote',
               )
 
+              const replyDownVotes = replyVotes.filter(
+                (replyVote) => replyVote.voteType === 'downVote',
+              )
+
               const replyVoted = replyVotes.find(
                 (replyVote) => replyVote.userId === user.id,
               )
@@ -111,14 +116,19 @@ class CommentGetAllPrivateService {
                 content: reply.content,
                 createdAt: reply.createdAt,
                 updatedAt: reply.updatedAt,
-                score: replyUpVotes.length,
-                voted: replyVoted ? replyVoted.voteType : null,
+                score: replyUpVotes.length - replyDownVotes.length,
+                voted: {
+                  voteId: replyVoted ? replyVoted?.id : null,
+                  voteType: replyVoted ? replyVoted.voteType : null,
+                },
                 user: {
                   username: replyUser.username,
+                  avatar: replyUser.avatar,
                 },
                 replyTo: {
                   user: {
                     username: userToReply.username,
+                    avatar: userToReply.avatar,
                   },
                 },
               }
@@ -149,9 +159,13 @@ class CommentGetAllPrivateService {
           createdAt: comment.createdAt,
           updatedAt: comment.updatedAt,
           score: commentUpVotes.length - commentDownVotes.length,
-          voted: commentVoted ? commentVoted.voteType : null,
+          voted: {
+            voteId: commentVoted ? commentVoted.id : null,
+            voteType: commentVoted ? commentVoted.voteType : null,
+          },
           user: {
             username: commentUser.username,
+            avatar: commentUser.avatar,
           },
           replies: commentReplies,
         }

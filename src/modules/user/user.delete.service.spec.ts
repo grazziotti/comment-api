@@ -18,6 +18,7 @@ describe('delete user service', () => {
     const user = await userInMemoryRepository.save({
       username: 'user1',
       password: passwordHash,
+      avatar: null,
     })
 
     await userDeleteService.execute(user.id)

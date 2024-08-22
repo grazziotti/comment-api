@@ -25,11 +25,13 @@ beforeEach(async () => {
   user = await userInMemoryRepository.save({
     username: 'user1_test',
     password: passwordHash,
+    avatar: null,
   })
 
   user2 = await userInMemoryRepository.save({
     username: 'user2_test',
     password: passwordHash,
+    avatar: null,
   })
 })
 
@@ -106,6 +108,7 @@ describe('create comment service', () => {
     const user = await userInMemoryRepository.save({
       username: 'user3_test',
       password: passwordHash,
+      avatar: null,
     })
 
     const comment = {

@@ -10,6 +10,7 @@ type CommentDataType = {
   score: number
   user: {
     username: string
+    avatar: string | null
   }
   replies: ReplyDataType[]
 }
@@ -22,10 +23,12 @@ type ReplyDataType = {
   score: number
   user: {
     username: string
+    avatar: string | null
   }
   replyTo: {
     user: {
       username: string
+      avatar: string | null
     }
   }
 }
@@ -98,10 +101,12 @@ class CommentGetAllPublicService {
                 score: replyUpVotes.length - replyDownVotes.length,
                 user: {
                   username: replyUser.username,
+                  avatar: userToReply.avatar,
                 },
                 replyTo: {
                   user: {
                     username: userToReply.username,
+                    avatar: userToReply.avatar,
                   },
                 },
               }
@@ -130,6 +135,7 @@ class CommentGetAllPublicService {
           score: commentUpVotes.length - commentDownVotes.length,
           user: {
             username: commentUser.username,
+            avatar: commentUser.avatar,
           },
           replies: commentReplies,
         }
@@ -138,7 +144,9 @@ class CommentGetAllPublicService {
       }),
     )
 
-    return formattedComments
+    return formattedComments.sort(
+      (a, b) => a.createdAt.getTime() - b.createdAt.getTime(),
+    )
   }
 }
 
