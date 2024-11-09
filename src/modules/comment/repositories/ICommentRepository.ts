@@ -20,6 +20,7 @@ export type CommentSave = {
   replyToUserId: string | null
   createdAt: Date
   updatedAt: Date | null
+  replies?: CommentSave[]
 }
 
 export type CommentResponse = {

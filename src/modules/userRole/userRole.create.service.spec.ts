@@ -32,6 +32,7 @@ describe('create userRole service', () => {
     user = await userInMemoryRepository.save({
       username: 'user1_test',
       password: passwordHash,
+      avatar: null,
     })
 
     role = await roleInMemoryRepository.save({ name: 'user' })

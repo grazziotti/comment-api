@@ -41,12 +41,12 @@ describe('user controller', () => {
 
     it('should not be able to create an existing user', async () => {
       await request(app).post('/api/v1/users').send({
-        username: 'test-integration-exist',
+        username: 'test-exist',
         password: 'TestPassword1234$',
       })
 
       const response = await request(app).post('/api/v1/users').send({
-        username: 'test-integration-exist',
+        username: 'test-exist',
         password: 'TestPassword1234$',
       })
 
@@ -78,7 +78,7 @@ describe('user controller', () => {
       )
     })
 
-    it('should reject a username with less than 2 characters', async () => {
+    it('should reject a username with less than 4 characters', async () => {
       const response = await request(app).post('/api/v1/users').send({
         username: 'a',
         password: 'TestPassword1234$',
@@ -86,11 +86,11 @@ describe('user controller', () => {
 
       expect(response.status).toBe(400)
       expect(response.body.errors[0].msg).toBe(
-        'Username must have at least 2 characters.',
+        'Username must have at least 4 characters.',
       )
     })
 
-    it('should reject a username longer than 30 characters', async () => {
+    it('should reject a username longer than 20 characters', async () => {
       const longUsername = 'a'.repeat(30 + 1)
 
       const response = await request(app).post('/api/v1/users').send({
@@ -100,7 +100,7 @@ describe('user controller', () => {
 
       expect(response.status).toBe(400)
       expect(response.body.errors[0].msg).toBe(
-        'Username must have at most 30 characters.',
+        'Username must have at most 20 characters.',
       )
     })
 
@@ -160,6 +160,7 @@ describe('user controller', () => {
       const user = await userPrismaRepository.save({
         username: 'user4',
         password: passwordHash,
+        avatar: null,
       })
 
       await userRolePrismaRepository.save({
@@ -186,6 +187,7 @@ describe('user controller', () => {
       const user = await userPrismaRepository.save({
         username: 'user85',
         password: passwordHash,
+        avatar: null,
       })
 
       const response = await request(app)
@@ -203,6 +205,7 @@ describe('user controller', () => {
       const user = await userPrismaRepository.save({
         username: 'user6',
         password: passwordHash,
+        avatar: null,
       })
 
       const response = await request(app).get(`/api/v1/users/${user.id}`)
@@ -219,6 +222,7 @@ describe('user controller', () => {
       const user = await userPrismaRepository.save({
         username: 'user1',
         password: passwordHash,
+        avatar: null,
       })
 
       await userRolePrismaRepository.save({
@@ -249,11 +253,13 @@ describe('user controller', () => {
       const user = await userPrismaRepository.save({
         username: 'user89',
         password: passwordHash,
+        avatar: null,
       })
 
       const admin = await userPrismaRepository.save({
         username: 'admin',
         password: passwordHash,
+        avatar: null,
       })
 
       await userRolePrismaRepository.save({
@@ -289,11 +295,13 @@ describe('user controller', () => {
       const user = await userPrismaRepository.save({
         username: 'user87',
         password: passwordHash,
+        avatar: null,
       })
 
       const user2 = await userPrismaRepository.save({
         username: 'user88',
         password: passwordHash,
+        avatar: null,
       })
 
       await userRolePrismaRepository.save({
@@ -328,6 +336,7 @@ describe('user controller', () => {
       const user = await userPrismaRepository.save({
         username: 'user2',
         password: passwordHash,
+        avatar: null,
       })
 
       await userRolePrismaRepository.save({
@@ -360,6 +369,7 @@ describe('user controller', () => {
       const user = await userPrismaRepository.save({
         username: 'user3',
         password: passwordHash,
+        avatar: null,
       })
 
       const response = await request(app)
@@ -380,6 +390,7 @@ describe('user controller', () => {
       const user = await userPrismaRepository.save({
         username: 'user10',
         password: passwordHash,
+        avatar: null,
       })
 
       const response = await request(app).put(`/api/v1/users/${user.id}`).send({
@@ -398,6 +409,7 @@ describe('user controller', () => {
       const user = await userPrismaRepository.save({
         username: 'user7',
         password: passwordHash,
+        avatar: null,
       })
 
       await userRolePrismaRepository.save({
@@ -429,11 +441,13 @@ describe('user controller', () => {
       const user = await userPrismaRepository.save({
         username: 'user90',
         password: passwordHash,
+        avatar: null,
       })
 
       const user2 = await userPrismaRepository.save({
         username: 'user91',
         password: passwordHash,
+        avatar: null,
       })
 
       await userRolePrismaRepository.save({
@@ -465,11 +479,13 @@ describe('user controller', () => {
       const user = await userPrismaRepository.save({
         username: 'user93',
         password: passwordHash,
+        avatar: null,
       })
 
       const admin = await userPrismaRepository.save({
         username: 'admin2',
         password: passwordHash,
+        avatar: null,
       })
 
       await userRolePrismaRepository.save({
@@ -506,6 +522,7 @@ describe('user controller', () => {
       const user = await userPrismaRepository.save({
         username: 'user5',
         password: passwordHash,
+        avatar: null,
       })
 
       const response = await request(app).delete(`/api/v1/users/${user.id}`)
@@ -521,6 +538,7 @@ describe('user controller', () => {
       const user = await userPrismaRepository.save({
         username: 'user8',
         password: passwordHash,
+        avatar: null,
       })
 
       const response = await request(app)

@@ -26,6 +26,7 @@ describe('create user service', () => {
     const user = {
       username: 'user_test',
       password: 'TestPassword1234$',
+      avatar: null,
     }
 
     const result = await createUserService.execute(user)
@@ -37,6 +38,7 @@ describe('create user service', () => {
     const user = {
       username: 'user_test_existing',
       password: 'TestPassword1234$',
+      avatar: null,
     }
 
     await createUserService.execute(user)

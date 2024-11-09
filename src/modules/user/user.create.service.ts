@@ -37,7 +37,7 @@ class CreateUserService {
 
     if (avatar) {
       await sharp(avatar.path)
-        .resize(30, 30, {
+        .resize(32, 32, {
           fit: sharp.fit.fill,
           position: 'bottom',
         })

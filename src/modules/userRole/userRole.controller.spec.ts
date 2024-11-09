@@ -38,16 +38,19 @@ beforeAll(async () => {
   user = await userRepository.save({
     username: 'user1',
     password: passwordHash,
+    avatar: null,
   })
 
   user2 = await userRepository.save({
     username: 'user2',
     password: passwordHash,
+    avatar: null,
   })
 
   admin = await userRepository.save({
     username: 'admin',
     password: passwordHash,
+    avatar: null,
   })
 
   roleUser = await roleRepository.save({ name: 'user' })

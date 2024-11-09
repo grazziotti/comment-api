@@ -29,11 +29,13 @@ beforeEach(async () => {
   user = await userInMemoryRepository.save({
     username: 'user1_test',
     password: passwordHash,
+    avatar: null,
   })
 
   user2 = await userInMemoryRepository.save({
     username: 'user2_test',
     password: passwordHash,
+    avatar: null,
   })
 })
 
@@ -71,9 +73,9 @@ describe('create comment service', () => {
 
     expect(commentList[0].content).toBe('Test content')
     expect(commentList[0].score).toBe(1)
-    expect(commentList[0].voted).toBe('upVote')
+    expect(commentList[0].voted.voteType).toBe('upVote')
     expect(commentList[0].replies[0].score).toBe(0)
-    expect(commentList[0].replies[0].voted).toBe(null)
+    expect(commentList[0].replies[0].voted.voteId).toBe(null)
     expect(commentList[0].replies[0].content).toBe('Reply test content')
   })
   it('should not be able to return a list of comments with a invalid userId', async () => {

@@ -21,6 +21,7 @@ class CommentPrismaRepository implements ICommentRepository {
 
     return createdComment
   }
+
   async findRepliesByCommentId(id: string) {
     const replies = await prismaClient.comment.findMany({
       where: {
@@ -40,7 +41,26 @@ class CommentPrismaRepository implements ICommentRepository {
   }
 
   async getAll() {
-    const comments = await prismaClient.comment.findMany()
+    const comments = await prismaClient.comment.findMany({
+      where: {
+        parentId: null,
+      },
+      orderBy: {
+        createdAt: 'asc',
+      },
+      include: {
+        replies: {
+          where: {
+            parentId: {
+              not: null,
+            },
+          },
+          orderBy: {
+            createdAt: 'asc',
+          },
+        },
+      },
+    })
 
     return comments
   }

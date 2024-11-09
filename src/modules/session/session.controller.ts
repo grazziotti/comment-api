@@ -1,14 +1,22 @@
 import { Request, Response } from 'express'
 import { UserPrismaRepository } from '@/modules/user/repositories/UserPrismaRepository'
 import { SessionService } from './session.create.service'
+import { UserRolePrismaRepository } from '../userRole/repositories/UserRolePrismaRepository'
+import { RolePrismaRepository } from '../role/repositories/RolePrismaRepository'
 
 class SessionController {
   async create(request: Request, response: Response): Promise<Response> {
     try {
       const { username, password } = request.body
 
-      const prismaRepository = new UserPrismaRepository()
-      const createSession = new SessionService(prismaRepository)
+      const userPrismaRepository = new UserPrismaRepository()
+      const userRolePrismaRepository = new UserRolePrismaRepository()
+      const rolePrismaRepository = new RolePrismaRepository()
+      const createSession = new SessionService(
+        userPrismaRepository,
+        userRolePrismaRepository,
+        rolePrismaRepository,
+      )
 
       const session = await createSession.execute({
         username,
