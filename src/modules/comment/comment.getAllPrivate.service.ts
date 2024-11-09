@@ -61,10 +61,6 @@ class CommentGetAllPrivateService {
       (comment) => comment.parentId === null,
     )
 
-    const replies = commentsAndReplies.filter(
-      (comment) => comment.parentId !== null,
-    )
-
     const formattedComments = await Promise.all(
       comments.map(async (comment) => {
         const commentUser = await this.userRepository.findById(comment.userId)
@@ -72,6 +68,8 @@ class CommentGetAllPrivateService {
         if (!commentUser) {
           throw new Error('Comment user not found.')
         }
+
+        const replies = comment.replies === undefined ? [] : comment.replies
 
         const commentReplies = await Promise.all(
           replies
