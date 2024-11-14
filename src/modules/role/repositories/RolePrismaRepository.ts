@@ -1,4 +1,4 @@
-import { prismaClient } from '@/database/client'
+import { prismaClient } from '../../../database/client'
 import { IRoleRepository, RoleCreate, RoleSave } from './IRoleRepository'
 
 class RolePrismaRepository implements IRoleRepository {

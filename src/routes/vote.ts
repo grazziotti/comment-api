@@ -1,12 +1,12 @@
 import { Router } from 'express'
-import { VoteController } from '@/modules/vote/vote.controller'
-import { privateRoute } from '@/config/passport'
+import { VoteController } from '../modules/vote/vote.controller'
+import { privateRoute } from '../config/passport'
 import {
   createVoteValidation,
   editVoteValidation,
-} from '@/validators/voteValidator'
-import { validateAuth } from '@/validators/validateAuth'
-import { authVote } from '@/middlewares/vote'
+} from '../validators/voteValidator'
+import { validateAuth } from '../validators/validateAuth'
+import { authVote } from '../middlewares/vote'
 
 const voteRoutes = Router()
 const voteController = new VoteController()

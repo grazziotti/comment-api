@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import userRoutes from '@/routes/user'
+import userRoutes from '../routes/user'
 import commentRoutes from './comment'
 import sessionRoutes from './session'
 import voteRoutes from './vote'

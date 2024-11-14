@@ -1,7 +1,7 @@
 import express, { ErrorRequestHandler } from 'express'
-import routes from '@/routes'
+import routes from './routes'
 import swaggerUi from 'swagger-ui-express'
-import swaggerDocs from '@/swagger.json'
+import swaggerDocs from './swagger.json'
 import cors from 'cors'
 import { MulterError } from 'multer'
 

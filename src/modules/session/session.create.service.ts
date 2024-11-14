@@ -1,5 +1,5 @@
 import { sign } from 'jsonwebtoken'
-import { IUserRepository } from '@/modules/user/repositories/IUserRepository'
+import { IUserRepository } from '../../modules/user/repositories/IUserRepository'
 import { compare } from 'bcrypt'
 import { IUserRoleRepository } from '../userRole/repositories/IUserRoleRepository'
 import { IRoleRepository } from '../role/repositories/IRoleRepository'

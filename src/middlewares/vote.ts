@@ -1,13 +1,13 @@
-import { RolePrismaRepository } from '@/modules/role/repositories/RolePrismaRepository'
-import { FindRoleByIdService } from '@/modules/role/role.findById.service'
-import { UserSave } from '@/modules/user/repositories/IUserRepository'
-import { UserPrismaRepository } from '@/modules/user/repositories/UserPrismaRepository'
-import { UserRolePrismaRepository } from '@/modules/userRole/repositories/UserRolePrismaRepository'
-import { GetUserRolesService } from '@/modules/userRole/userRole.getUserRoles.service'
-import { VoteSave } from '@/modules/vote/repositories/IVoteRepository'
+import { RolePrismaRepository } from '../modules/role/repositories/RolePrismaRepository'
+import { FindRoleByIdService } from '../modules/role/role.findById.service'
+import { UserSave } from '../modules/user/repositories/IUserRepository'
+import { UserPrismaRepository } from '../modules/user/repositories/UserPrismaRepository'
+import { UserRolePrismaRepository } from '../modules/userRole/repositories/UserRolePrismaRepository'
+import { GetUserRolesService } from '../modules/userRole/userRole.getUserRoles.service'
+import { VoteSave } from '../modules/vote/repositories/IVoteRepository'
 
-import { VotePrismaRepository } from '@/modules/vote/repositories/VotePrismaRepository'
-import { VoteGetService } from '@/modules/vote/vote.get.service'
+import { VotePrismaRepository } from '../modules/vote/repositories/VotePrismaRepository'
+import { VoteGetService } from '../modules/vote/vote.get.service'
 import { NextFunction, Request, Response } from 'express'
 
 const authVote = async (

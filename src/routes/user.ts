@@ -1,15 +1,15 @@
 import { Router } from 'express'
-import { UserController } from '@/modules/user/user.controller'
-import { validateAuth } from '@/validators/validateAuth'
+import { UserController } from '../modules/user/user.controller'
+import { validateAuth } from '../validators/validateAuth'
 import {
   createUserValidation,
   editUserValidation,
   userRoleValidation,
-} from '@/validators/userValidator'
-import { privateRoute } from '@/config/passport'
-import { UserRoleController } from '@/modules/userRole/userRole.controller'
-import { authRole } from '@/middlewares/role'
-import { authUser } from '@/middlewares/user'
+} from '../validators/userValidator'
+import { privateRoute } from '../config/passport'
+import { UserRoleController } from '../modules/userRole/userRole.controller'
+import { authRole } from '../middlewares/role'
+import { authUser } from '../middlewares/user'
 import multer from 'multer'
 
 const storage = multer.diskStorage({

@@ -1,4 +1,4 @@
-import { prismaClient } from '@/database/client'
+import { prismaClient } from '../../../database/client'
 import {
   IUserRepository,
   UserCreate,

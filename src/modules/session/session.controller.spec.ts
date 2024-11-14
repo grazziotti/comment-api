@@ -2,7 +2,7 @@
  * @jest-environment ./prisma/prisma-environment-jest
  */
 
-import { app } from '@/app'
+import { app } from '../../app'
 import request from 'supertest'
 import { IUserRepository } from '../user/repositories/IUserRepository'
 import { UserPrismaRepository } from '../user/repositories/UserPrismaRepository'

@@ -2,7 +2,7 @@
  * @jest-environment ./prisma/prisma-environment-jest
  */
 
-import { app } from '@/app'
+import { app } from '../../app'
 import { sign } from 'jsonwebtoken'
 import request from 'supertest'
 import { IUserRepository, UserSave } from '../user/repositories/IUserRepository'

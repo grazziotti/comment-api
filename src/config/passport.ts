@@ -3,9 +3,9 @@ import { Strategy, ExtractJwt } from 'passport-jwt'
 import { NextFunction, Request, Response } from 'express'
 import dotenv from 'dotenv'
 
-import { UserPrismaRepository } from '@/modules/user/repositories/UserPrismaRepository'
-import { FindUserByIdService } from '@/modules/user/user.findById.service'
-import { UserSave } from '@/modules/user/repositories/IUserRepository'
+import { UserPrismaRepository } from '../modules/user/repositories/UserPrismaRepository'
+import { FindUserByIdService } from '../modules/user/user.findById.service'
+import { UserSave } from '../modules/user/repositories/IUserRepository'
 
 dotenv.config()
 const notAuthorizedJson = { status: 403, message: 'Not authorized.' }

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { UserPrismaRepository } from '@/modules/user/repositories/UserPrismaRepository'
+import { UserPrismaRepository } from '../../modules/user/repositories/UserPrismaRepository'
 import { SessionService } from './session.create.service'
 import { UserRolePrismaRepository } from '../userRole/repositories/UserRolePrismaRepository'
 import { RolePrismaRepository } from '../role/repositories/RolePrismaRepository'

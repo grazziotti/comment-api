@@ -1,8 +1,8 @@
-import { RolePrismaRepository } from '@/modules/role/repositories/RolePrismaRepository'
-import { FindRoleByIdService } from '@/modules/role/role.findById.service'
-import { UserSave } from '@/modules/user/repositories/IUserRepository'
-import { UserRolePrismaRepository } from '@/modules/userRole/repositories/UserRolePrismaRepository'
-import { GetUserRolesService } from '@/modules/userRole/userRole.getUserRoles.service'
+import { RolePrismaRepository } from '../modules/role/repositories/RolePrismaRepository'
+import { FindRoleByIdService } from '../modules/role/role.findById.service'
+import { UserSave } from '../modules/user/repositories/IUserRepository'
+import { UserRolePrismaRepository } from '../modules/userRole/repositories/UserRolePrismaRepository'
+import { GetUserRolesService } from '../modules/userRole/userRole.getUserRoles.service'
 import { NextFunction, Request, Response } from 'express'
 
 const authUser = async (
