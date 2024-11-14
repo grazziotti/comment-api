@@ -12,7 +12,7 @@
     "test:watch": "yarn test --watch",
     "test:staged": "yarn test --findRelatedTests",
     "test:push": "yarn test --coverage",
-    "vercel-build": "npx prisma migrate deploy"
+    "vercel-build": "prisma generate && npx prisma migrate deploy && tsc"
   },
   "keywords": [],
   "author": "",
@@ -59,7 +59,7 @@
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.1",
     "pg": "^8.11.3",
-    "sharp": "^0.33.4",
+    "sharp": "^0.32.6",
     "swagger-ui-express": "^5.0.0"
   }
 }
