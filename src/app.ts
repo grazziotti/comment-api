@@ -18,7 +18,13 @@ const errorHandler: ErrorRequestHandler = (err, req, res) => {
   }
 }
 
-app.use(cors({ origin: 'https://comment-app-delta.vercel.app/' }))
+app.use(
+  cors({
+    origin: ['https://comment-app-delta.vercel.app'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  }),
+)
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs))
