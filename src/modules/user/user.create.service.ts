@@ -43,7 +43,7 @@ class CreateUserService {
 
       const uploadResult = await new Promise((resolve, reject) => {
         const uploadStream = cloudinary.uploader.upload_stream(
-          { folder: 'avatars' },
+          { folder: 'comment-app-avatars' },
           (error, result) => {
             if (error) reject(error)
             else resolve(result)
