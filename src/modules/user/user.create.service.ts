@@ -22,7 +22,7 @@ class CreateUserService {
   public async execute(data: {
     username: string
     password: string
-    avatar: Buffer | undefined
+    avatar: Buffer | null
   }) {
     const { password, username, avatar } = data
 

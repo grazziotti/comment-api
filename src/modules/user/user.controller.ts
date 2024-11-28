@@ -24,7 +24,7 @@ class UserController {
       const user = await createUserService.execute({
         username,
         password,
-        avatar: request.file?.buffer,
+        avatar: request.file?.buffer ? request.file?.buffer : null,
       })
 
       return response.status(201).json(user)
