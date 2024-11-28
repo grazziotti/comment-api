@@ -11,7 +11,6 @@ class UserController {
   async create(request: Request, response: Response): Promise<Response> {
     try {
       const { username, password } = request.body
-      const avatar = request.file
 
       const userPrismaRepository = new UserPrismaRepository()
       const userRolePrismaRepository = new UserRolePrismaRepository()
@@ -25,9 +24,7 @@ class UserController {
       const user = await createUserService.execute({
         username,
         password,
-        avatar: avatar
-          ? { path: avatar.path, filename: avatar.filename }
-          : null,
+        avatar: request.file?.buffer,
       })
 
       return response.status(201).json(user)

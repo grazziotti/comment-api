@@ -4,7 +4,7 @@ import { IUserRoleRepository } from '../userRole/repositories/IUserRoleRepositor
 import { IUserRepository } from './repositories/IUserRepository'
 import { hash } from 'bcrypt'
 import { v2 as cloudinary } from 'cloudinary'
-import { unlink } from 'fs/promises'
+import path from 'path'
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_NAME as string,
@@ -22,7 +22,7 @@ class CreateUserService {
   public async execute(data: {
     username: string
     password: string
-    avatar: { path: string; filename: string } | null
+    avatar: Buffer | undefined
   }) {
     const { password, username, avatar } = data
 
@@ -36,23 +36,28 @@ class CreateUserService {
     const passwordHash = await hash(password, 8)
 
     if (avatar) {
-      await sharp(avatar.path)
-        .resize(32, 32, {
-          fit: sharp.fit.fill,
-          position: 'bottom',
-        })
-        .toFormat('jpeg')
-        .toFile(`./public/media/${avatar.filename}.jpg`)
+      const processedImage = await sharp(avatar)
+        .resize(32, 32)
+        .jpeg()
+        .toBuffer()
 
-      const uploadResult = await cloudinary.uploader.upload(
-        './public/media/' + `${avatar.filename}.jpg`,
-        { folder: 'avatars' },
-      )
+      const uploadResult = await new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          { folder: 'avatars' },
+          (error, result) => {
+            if (error) reject(error)
+            else resolve(result)
+          },
+        )
 
-      avatarRef = `${uploadResult.display_name}.jpg` as string
+        uploadStream.end(processedImage)
+      })
 
-      await unlink(avatar.path)
-      await unlink(`./public/media/${avatar.filename}.jpg`)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const secureUrl = (uploadResult as any).secure_url
+      const fileName = path.basename(new URL(secureUrl).pathname)
+
+      avatarRef = fileName
     }
 
     const userCreated = await this.userRepository.save({

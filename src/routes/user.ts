@@ -12,22 +12,13 @@ import { authRole } from '../middlewares/role'
 import { authUser } from '../middlewares/user'
 import multer from 'multer'
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, './tmp')
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now().toString())
-  },
-})
-
 const upload = multer({
-  storage: storage,
+  storage: multer.memoryStorage(),
   fileFilter: (req, file, cb) => {
     const allowed: string[] = ['image/jpg', 'image/jpeg', 'image/png']
     cb(null, allowed.includes(file.mimetype))
   },
-  limits: { fieldSize: 2000000 },
+  limits: { fileSize: 2000000 },
 })
 
 const userRoutes = Router()
