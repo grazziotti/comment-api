@@ -20,7 +20,7 @@ const errorHandler: ErrorRequestHandler = (err, req, res) => {
 
 app.use(
   cors({
-    origin: ['https://comment-app-azure.vercel.app', 'http://localhost:3000'],
+    origin: ['https://comment-app-beryl.vercel.app/', 'http://localhost:3000'],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   }),
