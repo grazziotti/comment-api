@@ -99,7 +99,7 @@ class CommentGetAllPublicService {
                 score: replyUpVotes.length - replyDownVotes.length,
                 user: {
                   username: replyUser.username,
-                  avatar: userToReply.avatar,
+                  avatar: replyUser.avatar,
                 },
                 replyTo: {
                   user: {
