@@ -1,6 +1,6 @@
 # Comment API built with NodeJS + Express + PostgreSQL
 
-[![pt-br](https://img.shields.io/badge/lang-pt--br-green.svg)](https://github.com/grazziotti/comment-api/blob/main/README.md)
+[![pt-br](https://img.shields.io/badge/lang-pt--br-green.svg)](https://github.com/grazziotti/comment-api/blob/master/README.md)
 
 This project is a REST API for managing comments in an application. Users can create, view, edit, and delete comments, as well as vote on comments and replies.
 
