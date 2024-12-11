@@ -4,8 +4,15 @@ import swaggerUi from 'swagger-ui-express'
 import swaggerDocs from './swagger.json'
 import cors from 'cors'
 import { MulterError } from 'multer'
+import rateLimit from 'express-rate-limit'
 
 const app = express()
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: 'Many attempts. Try later.',
+})
 
 const errorHandler: ErrorRequestHandler = (err, req, res) => {
   res.status(400)
@@ -18,6 +25,7 @@ const errorHandler: ErrorRequestHandler = (err, req, res) => {
   }
 }
 
+app.use(limiter)
 app.use(
   cors({
     origin: [
