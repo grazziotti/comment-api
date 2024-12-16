@@ -28,7 +28,10 @@ const errorHandler: ErrorRequestHandler = (err, req, res) => {
 app.use(limiter)
 app.use(
   cors({
-    origin: ['https://comment-app-front.vercel.app', 'http://localhost:3000'],
+    origin: [
+      'https://comment-app-grazziottiisla.vercel.app',
+      'http://localhost:3000',
+    ],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   }),
