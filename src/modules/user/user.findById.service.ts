@@ -7,7 +7,7 @@ class FindUserByIdService {
     const user = await this.userRepository.findById(id)
 
     if (!user) {
-      throw new Error('User not found.')
+      return null
     }
 
     return user
