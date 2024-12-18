@@ -17,13 +17,21 @@ const jwtOptions = {
 
 passport.use(
   new Strategy(jwtOptions, async (payload, done) => {
-    const prismaRepository = new UserPrismaRepository()
-    const findUserByIdService = new FindUserByIdService(prismaRepository)
+    try {
+      const prismaRepository = new UserPrismaRepository()
+      const findUserByIdService = new FindUserByIdService(prismaRepository)
 
-    const user = await findUserByIdService.execute(payload.id)
-    return user && user.deletedAt === null
-      ? done(null, user)
-      : done(notAuthorizedJson, false)
+      const user = await findUserByIdService.execute(payload.id)
+
+      if (!user || user.deletedAt !== null) {
+        return done(notAuthorizedJson, false)
+      }
+
+      return done(null, user)
+    } catch (error) {
+      console.error('Authentication error:', error)
+      return done(notAuthorizedJson, false)
+    }
   }),
 )
 
