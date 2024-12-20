@@ -42,6 +42,10 @@ class UserController {
 
       const user = await findUserByIdService.execute(id)
 
+      if (!user) {
+        return response.status(400).json({ error: 'User not found.' })
+      }
+
       return response.status(200).json({
         id: user.id,
         username: user.username,
